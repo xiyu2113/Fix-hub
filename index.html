@@ -3,1269 +3,1224 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FixHub PH — App Prototype</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>FixHub PH — Trusted Tech & Appliance Repair</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 :root {
-  --or: #FF5A00; --or2: #FF7A30; --or-dim: rgba(255,90,0,0.13);
-  --bk: #0d0d0d; --bk2: #161616; --bk3: #1e1e1e; --bk4: #272727;
+  --or: #FF5A00; --or2: #FF7A30; --or-dim: rgba(255,90,0,0.13); --or-glow: rgba(255,90,0,0.25);
+  --bk: #0d0d0d; --bk2: #141414; --bk3: #1c1c1c; --bk4: #242424; --bk5: #2c2c2c;
   --wh: #ffffff; --wh2: rgba(255,255,255,0.85); --wh3: rgba(255,255,255,0.5);
-  --wh4: rgba(255,255,255,0.18); --br: rgba(255,255,255,0.09);
-  --br-or: rgba(255,90,0,0.28);
+  --wh4: rgba(255,255,255,0.18); --br: rgba(255,255,255,0.08);
+  --br-or: rgba(255,90,0,0.3); --green: #22c55e; --amber: #f59e0b;
+  --sidebar-w: 260px; --topbar-h: 64px;
+  --radius: 14px; --radius-sm: 10px; --radius-lg: 20px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --transition: .2s cubic-bezier(.4,0,.2,1);
 }
-html,body { background:#1a1a2e; display:flex; justify-content:center; align-items:center; min-height:100vh; font-family:'DM Sans',sans-serif; }
+html, body { height:100%; background:var(--bk); color:var(--wh); font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.5; overflow:hidden; }
 
-/* PHONE FRAME */
-.phone-wrap { position:relative; }
-.phone-frame {
-  width:390px; height:844px; background:var(--bk); border-radius:50px;
-  overflow:hidden; position:relative;
-  box-shadow: 0 0 0 10px #111, 0 0 0 12px #2a2a2a, 0 40px 80px rgba(0,0,0,0.7), 0 0 60px rgba(255,90,0,0.08);
-}
-.phone-notch {
-  position:absolute; top:0; left:50%; transform:translateX(-50%);
-  width:126px; height:34px; background:#000; border-radius:0 0 20px 20px; z-index:200;
-}
-.phone-screen { width:100%; height:100%; overflow:hidden; position:relative; }
+/* ─── LAYOUT ─── */
+.app { display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; height:100vh; }
 
-/* SCREENS */
-.screen {
-  position:absolute; inset:0; background:var(--bk);
-  overflow-y:auto; overflow-x:hidden;
-  display:none; flex-direction:column;
-  animation: slideIn .3s ease;
+/* ─── TOP BAR ─── */
+.topbar {
+  grid-column:1/-1; display:flex; align-items:center; gap:16px;
+  background:var(--bk2); border-bottom:1px solid var(--br);
+  padding:0 24px; z-index:100; position:relative;
 }
-.screen.active { display:flex; }
-@keyframes slideIn { from{opacity:0; transform:translateX(30px)} to{opacity:1; transform:translateX(0)} }
-@keyframes slideBack { from{opacity:0; transform:translateX(-30px)} to{opacity:1; transform:translateX(0)} }
-.screen.back { animation: slideBack .3s ease; }
+.logo { display:flex; align-items:center; gap:10px; width:var(--sidebar-w); padding-right:24px; flex-shrink:0; }
+.logo-icon { font-size:22px; }
+.logo-text { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; letter-spacing:-.5px; }
+.logo-text span { color:var(--or); }
+.topbar-search {
+  flex:1; display:flex; align-items:center; gap:10px;
+  background:var(--bk3); border:1px solid var(--br); border-radius:10px;
+  padding:10px 16px; max-width:480px; cursor:text; transition:var(--transition);
+}
+.topbar-search:focus-within { border-color:var(--br-or); background:var(--bk4); }
+.topbar-search input { background:none; border:none; outline:none; color:var(--wh); font-size:14px; font-family:'DM Sans',sans-serif; flex:1; }
+.topbar-search input::placeholder { color:var(--wh3); }
+.topbar-actions { display:flex; align-items:center; gap:10px; margin-left:auto; }
+.icon-btn {
+  width:38px; height:38px; border-radius:10px; background:var(--bk3); border:1px solid var(--br);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:16px;
+  transition:var(--transition); position:relative;
+}
+.icon-btn:hover { background:var(--bk4); border-color:var(--br-or); }
+.notif-badge {
+  position:absolute; top:-5px; right:-5px; width:18px; height:18px;
+  background:var(--or); border-radius:50%; font-size:10px; font-weight:700;
+  display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif;
+  border:2px solid var(--bk2);
+}
+.user-chip {
+  display:flex; align-items:center; gap:8px; background:var(--bk3); border:1px solid var(--br);
+  border-radius:10px; padding:6px 12px 6px 6px; cursor:pointer; transition:var(--transition);
+}
+.user-chip:hover { border-color:var(--br-or); }
+.avatar { width:28px; height:28px; border-radius:50%; background:var(--or-dim); border:2px solid var(--br-or); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:10px; color:var(--or); flex-shrink:0; }
+.avatar.md { width:40px; height:40px; font-size:13px; }
+.avatar.lg { width:56px; height:56px; font-size:16px; }
+.avatar.xl { width:72px; height:72px; font-size:20px; }
+.user-name { font-size:13px; font-weight:600; }
 
-/* STATUS BAR */
-.status-bar {
-  height:44px; display:flex; align-items:center; justify-content:space-between;
-  padding:0 24px; position:sticky; top:0; z-index:50;
-  background:var(--bk); flex-shrink:0; padding-top:8px;
+/* ─── SIDEBAR ─── */
+.sidebar {
+  background:var(--bk2); border-right:1px solid var(--br);
+  display:flex; flex-direction:column; overflow-y:auto; padding:20px 12px;
 }
-.status-time { font-size:15px; font-weight:600; color:var(--wh); font-family:'Syne',sans-serif; }
-.status-icons { display:flex; gap:6px; align-items:center; }
-.status-icons span { font-size:13px; color:var(--wh); }
+.sidebar::-webkit-scrollbar { width:4px; }
+.sidebar::-webkit-scrollbar-track { background:transparent; }
+.sidebar::-webkit-scrollbar-thumb { background:var(--bk5); border-radius:4px; }
+.nav-section-label { font-size:10px; color:var(--wh3); font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:0 12px; margin-bottom:6px; margin-top:20px; }
+.nav-section-label:first-child { margin-top:0; }
+.nav-link {
+  display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px;
+  cursor:pointer; transition:var(--transition); color:var(--wh3); font-weight:500; font-size:14px;
+  position:relative; user-select:none;
+}
+.nav-link:hover { background:var(--bk3); color:var(--wh); }
+.nav-link.active { background:var(--or-dim); color:var(--or2); }
+.nav-link.active::before { content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--or); border-radius:0 3px 3px 0; }
+.nav-icon { font-size:18px; width:20px; text-align:center; flex-shrink:0; }
+.nav-badge { margin-left:auto; background:var(--or); color:white; font-size:10px; font-weight:700; padding:2px 7px; border-radius:100px; font-family:'Syne',sans-serif; }
+.sidebar-bottom { margin-top:auto; padding-top:20px; border-top:1px solid var(--br); }
+.sidebar-tech-switch { background:linear-gradient(135deg, var(--or-dim), transparent); border:1px solid var(--br-or); border-radius:12px; padding:14px; text-align:center; cursor:pointer; }
+.sidebar-tech-switch h4 { font-size:13px; font-weight:700; margin-bottom:4px; }
+.sidebar-tech-switch p { font-size:11px; color:var(--wh3); margin-bottom:10px; }
+.btn-or-sm { background:var(--or); color:white; border:none; padding:8px 16px; border-radius:8px; font-family:'Syne',sans-serif; font-size:12px; font-weight:700; cursor:pointer; width:100%; transition:var(--transition); }
+.btn-or-sm:hover { background:var(--or2); }
 
-/* TOP BAR */
-.top-bar {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:10px 20px 16px; flex-shrink:0;
-}
-.back-btn {
-  width:36px; height:36px; background:var(--bk3); border-radius:10px;
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; font-size:16px; transition:.15s; border:none; color:var(--wh);
-}
-.back-btn:active { transform:scale(.93); background:var(--bk4); }
-.top-title { font-family:'Syne',sans-serif; font-size:17px; font-weight:700; color:var(--wh); }
+/* ─── MAIN CONTENT ─── */
+.main { overflow-y:auto; overflow-x:hidden; background:var(--bk); }
+.main::-webkit-scrollbar { width:6px; }
+.main::-webkit-scrollbar-track { background:transparent; }
+.main::-webkit-scrollbar-thumb { background:var(--bk5); border-radius:4px; }
 
-/* BOTTOM NAV */
-.bottom-nav {
-  position:sticky; bottom:0; background:var(--bk2); border-top:1px solid var(--br);
-  display:flex; padding:10px 0 20px; flex-shrink:0; z-index:50;
-}
-.nav-item {
-  flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
-  cursor:pointer; padding:6px 0; transition:.15s;
-}
-.nav-item:active { opacity:.7; transform:scale(.95); }
-.nav-icon { font-size:22px; line-height:1; }
-.nav-label { font-size:10px; font-weight:600; color:var(--wh3); letter-spacing:.3px; }
-.nav-item.active .nav-label { color:var(--or); }
-.nav-item.active .nav-icon { filter: drop-shadow(0 0 4px rgba(255,90,0,.5)); }
+/* ─── VIEWS ─── */
+.view { display:none; padding:28px 32px; animation:fadeUp .25s ease; min-height:calc(100vh - var(--topbar-h)); }
+.view.active { display:block; }
+@keyframes fadeUp { from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:translateY(0)} }
 
-/* CONTENT PADDING */
-.content { padding:0 20px; flex:1; }
-
-/* ORANGE BUTTON */
-.btn-or {
-  width:100%; background:var(--or); color:var(--wh); border:none;
-  padding:16px; border-radius:14px; font-family:'Syne',sans-serif;
-  font-size:16px; font-weight:700; cursor:pointer; transition:.15s;
-  display:block; text-align:center;
-}
-.btn-or:active { transform:scale(.98); background:var(--or2); }
-.btn-ghost {
-  width:100%; background:transparent; color:var(--wh); border:1px solid var(--wh4);
-  padding:15px; border-radius:14px; font-family:'Syne',sans-serif;
-  font-size:15px; font-weight:600; cursor:pointer; transition:.15s;
-  display:block; text-align:center;
-}
-.btn-ghost:active { background:var(--bk3); }
-
-/* CARDS */
-.card {
-  background:var(--bk2); border:1px solid var(--br); border-radius:16px;
-  padding:18px; cursor:pointer; transition:.2s;
-}
-.card:active { transform:scale(.98); border-color:var(--br-or); }
-
-/* TAG */
-.tag {
-  display:inline-block; background:var(--or-dim); border:1px solid var(--br-or);
-  color:var(--or2); font-size:11px; font-weight:700; padding:3px 10px;
-  border-radius:100px; letter-spacing:.3px;
-}
-
-/* AVATAR */
-.avatar {
-  width:44px; height:44px; border-radius:50%; background:var(--or-dim);
-  border:2px solid var(--br-or); display:flex; align-items:center; justify-content:center;
-  font-family:'Syne',sans-serif; font-weight:800; font-size:14px; color:var(--or); flex-shrink:0;
-}
-.avatar.lg { width:64px; height:64px; font-size:20px; }
-
-/* STARS */
+/* ─── GENERAL COMPONENTS ─── */
+.page-title { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; margin-bottom:4px; }
+.page-sub { font-size:14px; color:var(--wh3); margin-bottom:28px; }
+.section-label { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; margin-bottom:16px; }
+.divider { height:1px; background:var(--br); margin:20px 0; }
+.tag { display:inline-flex; align-items:center; gap:4px; background:var(--or-dim); border:1px solid var(--br-or); color:var(--or2); font-size:11px; font-weight:700; padding:3px 10px; border-radius:100px; letter-spacing:.3px; }
+.tag.green { background:rgba(34,197,94,0.1); border-color:rgba(34,197,94,0.25); color:var(--green); }
+.tag.amber { background:rgba(245,158,11,0.1); border-color:rgba(245,158,11,0.25); color:var(--amber); }
 .stars { color:var(--or); font-size:13px; letter-spacing:1px; }
+.dot-open { width:8px; height:8px; border-radius:50%; background:var(--green); display:inline-block; }
+.dot-busy { width:8px; height:8px; border-radius:50%; background:var(--amber); display:inline-block; }
+.badge-pill { display:inline-flex; align-items:center; gap:4px; background:var(--bk3); border:1px solid var(--br); border-radius:100px; padding:4px 10px; font-size:11px; color:var(--wh3); }
+.score-pill { background:var(--or-dim); border:1px solid var(--br-or); color:var(--or2); font-size:11px; font-weight:700; padding:3px 10px; border-radius:100px; }
+.card { background:var(--bk2); border:1px solid var(--br); border-radius:var(--radius); padding:20px; }
+.card:hover { border-color:rgba(255,255,255,0.12); }
+.card.interactive { cursor:pointer; transition:var(--transition); }
+.card.interactive:hover { border-color:var(--br-or); transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,0,0,.3); }
+.btn-or { background:var(--or); color:white; border:none; padding:12px 24px; border-radius:10px; font-family:'Syne',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:var(--transition); white-space:nowrap; }
+.btn-or:hover { background:var(--or2); box-shadow:0 4px 16px var(--or-glow); }
+.btn-ghost { background:transparent; color:var(--wh); border:1px solid var(--wh4); padding:12px 24px; border-radius:10px; font-family:'Syne',sans-serif; font-size:14px; font-weight:600; cursor:pointer; transition:var(--transition); white-space:nowrap; }
+.btn-ghost:hover { background:var(--bk3); border-color:var(--wh4); }
+.input-label { font-size:11px; color:var(--wh3); font-weight:700; letter-spacing:.5px; text-transform:uppercase; display:block; margin-bottom:6px; }
+.inp { width:100%; background:var(--bk3); border:1px solid var(--br); border-radius:10px; padding:12px 14px; color:var(--wh); font-size:14px; font-family:'DM Sans',sans-serif; outline:none; transition:var(--transition); }
+.inp:focus { border-color:var(--br-or); background:var(--bk4); }
+.inp::placeholder { color:var(--wh3); }
+.chip { display:inline-flex; align-items:center; padding:7px 14px; border-radius:100px; background:var(--bk3); border:1px solid var(--br); font-size:13px; color:var(--wh3); cursor:pointer; transition:var(--transition); white-space:nowrap; user-select:none; }
+.chip:hover { border-color:var(--br-or); color:var(--wh); }
+.chip.active { background:var(--or-dim); border-color:var(--br-or); color:var(--or2); font-weight:600; }
+.chip-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
 
-/* BADGE PILL */
-.badge-pill {
-  display:inline-flex; align-items:center; gap:4px;
-  background:var(--bk3); border:1px solid var(--br);
-  border-radius:100px; padding:4px 10px; font-size:11px; color:var(--wh3);
+/* ─── GRID HELPERS ─── */
+.grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+.grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+
+/* ─── TECH CARD (LIST STYLE) ─── */
+.tech-row {
+  display:flex; align-items:center; gap:16px; padding:18px 20px;
+  background:var(--bk2); border:1px solid var(--br); border-radius:var(--radius);
+  margin-bottom:10px; cursor:pointer; transition:var(--transition);
 }
-
-/* DIVIDER */
-.divider { height:1px; background:var(--br); margin:16px 0; }
-
-/* INPUT */
-.input-wrap { position:relative; margin-bottom:14px; }
-.input-wrap label { font-size:12px; color:var(--wh3); font-weight:600; letter-spacing:.5px; text-transform:uppercase; display:block; margin-bottom:6px; }
-.inp {
-  width:100%; background:var(--bk3); border:1px solid var(--br);
-  border-radius:12px; padding:14px 16px; color:var(--wh); font-size:15px;
-  font-family:'DM Sans',sans-serif; outline:none; transition:.2s;
-}
-.inp:focus { border-color:var(--br-or); }
-
-/* SEARCH BAR */
-.search-bar {
-  display:flex; align-items:center; gap:10px;
-  background:var(--bk3); border:1px solid var(--br); border-radius:14px;
-  padding:12px 16px; margin-bottom:20px;
-}
-.search-bar span { font-size:18px; }
-.search-bar input {
-  background:none; border:none; outline:none; color:var(--wh);
-  font-size:15px; font-family:'DM Sans',sans-serif; flex:1;
-}
-.search-bar input::placeholder { color:var(--wh3); }
-
-/* CHIP ROW */
-.chip-row { display:flex; gap:8px; margin-bottom:20px; overflow-x:auto; padding-bottom:4px; }
-.chip-row::-webkit-scrollbar { display:none; }
-.chip {
-  flex-shrink:0; padding:8px 16px; border-radius:100px;
-  background:var(--bk3); border:1px solid var(--br);
-  font-size:13px; color:var(--wh3); cursor:pointer; transition:.15s;
-  white-space:nowrap;
-}
-.chip.active, .chip:active { background:var(--or-dim); border-color:var(--br-or); color:var(--or2); }
-
-/* STATUS DOT */
-.dot-open { width:8px; height:8px; border-radius:50%; background:#22c55e; flex-shrink:0; }
-.dot-busy { width:8px; height:8px; border-radius:50%; background:#f59e0b; flex-shrink:0; }
-
-/* PROGRESS BAR */
-.progress-bar { height:6px; background:var(--bk4); border-radius:100px; overflow:hidden; }
-.progress-fill { height:100%; background:var(--or); border-radius:100px; transition:.5s; }
-
-/* NOTIFICATION DOT */
-.notif-dot {
-  width:18px; height:18px; background:var(--or); border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  font-size:10px; font-weight:700; color:white; margin-left:auto;
-}
-
-/* ── SCREEN 1: SPLASH ── */
-#splash { background: linear-gradient(160deg, #0d0d0d 0%, #1a0a00 100%); justify-content:center; align-items:center; }
-.splash-glow {
-  position:absolute; width:300px; height:300px; border-radius:50%;
-  background:radial-gradient(circle, rgba(255,90,0,0.22) 0%, transparent 70%);
-  top:50%; left:50%; transform:translate(-50%,-50%);
-}
-.splash-logo { font-family:'Syne',sans-serif; font-size:48px; font-weight:800; color:var(--wh); position:relative; z-index:1; }
-.splash-logo span { color:var(--or); }
-.splash-tag { color:var(--wh3); font-size:14px; margin-top:8px; position:relative; z-index:1; text-align:center; }
-.splash-btns { position:absolute; bottom:60px; left:20px; right:20px; display:flex; flex-direction:column; gap:12px; }
-
-/* ── SCREEN 2: SIGN UP ── */
-.form-scroll { padding:0 20px 24px; flex:1; overflow-y:auto; }
-.form-header { padding:16px 20px 20px; }
-.form-header h2 { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; }
-.form-header p { color:var(--wh3); font-size:14px; margin-top:6px; }
-.acc-type-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
-.acc-type {
-  background:var(--bk3); border:2px solid var(--br); border-radius:14px;
-  padding:16px; text-align:center; cursor:pointer; transition:.2s;
-}
-.acc-type.selected { border-color:var(--or); background:var(--or-dim); }
-.acc-type .type-icon { font-size:28px; margin-bottom:8px; }
-.acc-type h4 { font-size:13px; font-weight:700; }
-
-/* ── SCREEN 3: LOGIN ── */
-.login-top { padding:60px 20px 30px; text-align:center; }
-.login-top h2 { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; }
-.login-top p { color:var(--wh3); font-size:14px; margin-top:8px; }
-.forgot { color:var(--or); font-size:13px; cursor:pointer; display:block; text-align:right; margin-top:-6px; margin-bottom:20px; }
-
-/* ── SCREEN 4: HOME DASHBOARD ── */
-.home-header { padding:14px 20px 0; }
-.home-greeting { font-size:13px; color:var(--wh3); }
-.home-name { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; margin-top:2px; }
-.home-header-row { display:flex; align-items:center; justify-content:space-between; }
-.notif-btn {
-  width:40px; height:40px; background:var(--bk3); border-radius:12px;
-  display:flex; align-items:center; justify-content:center; font-size:20px;
-  cursor:pointer; position:relative; border:none;
-}
-.notif-btn::after { content:'3'; position:absolute; top:-4px; right:-4px; width:18px; height:18px; background:var(--or); border-radius:50%; font-size:10px; font-weight:700; color:white; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; }
-
-.cat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:20px; }
-.cat-item { background:var(--bk3); border:1px solid var(--br); border-radius:14px; padding:14px 8px; text-align:center; cursor:pointer; transition:.2s; }
-.cat-item:active { transform:scale(.95); border-color:var(--br-or); background:var(--or-dim); }
-.cat-item .cat-icon { font-size:26px; margin-bottom:6px; }
-.cat-item span { font-size:10px; color:var(--wh3); font-weight:600; display:block; }
-
-.tech-card { display:flex; gap:12px; align-items:center; cursor:pointer; background:var(--bk2); border:1px solid var(--br); border-radius:16px; padding:16px; margin-bottom:12px; transition:.2s; }
-.tech-card:active { border-color:var(--br-or); transform:scale(.98); }
+.tech-row:hover { border-color:var(--br-or); transform:translateX(2px); }
 .tech-info { flex:1; }
 .tech-name { font-size:15px; font-weight:700; margin-bottom:3px; }
-.tech-spec { font-size:12px; color:var(--wh3); margin-bottom:6px; }
-.tech-meta { display:flex; align-items:center; gap:8px; }
-.tech-rate { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:var(--or); }
-.fixer-score { font-size:11px; color:var(--wh3); background:var(--bk4); padding:3px 8px; border-radius:100px; }
+.tech-spec { font-size:13px; color:var(--wh3); margin-bottom:6px; }
+.tech-meta { display:flex; align-items:center; gap:10px; }
+.tech-rate { font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--or); }
+.tech-rate-lbl { font-size:11px; color:var(--wh3); }
+.tech-actions { display:flex; gap:8px; align-items:center; margin-left:auto; }
 
-/* ── SCREEN 5: TECHNICIAN PROFILE ── */
-.profile-hero { background:var(--bk2); padding:20px; text-align:center; border-bottom:1px solid var(--br); }
-.profile-badges { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:12px; }
-.score-ring { width:56px; height:56px; border-radius:50%; background:var(--or-dim); border:3px solid var(--or); display:flex; align-items:center; justify-content:center; flex-direction:column; }
-.score-num { font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--or); }
-.score-lbl { font-size:8px; color:var(--or2); }
-.review-card { background:var(--bk3); border:1px solid var(--br); border-radius:12px; padding:14px; margin-bottom:10px; }
+/* ─── STAT BOX ─── */
+.stat-box { background:var(--bk2); border:1px solid var(--br); border-radius:var(--radius); padding:20px 22px; }
+.stat-num { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; color:var(--or); line-height:1; }
+.stat-lbl { font-size:12px; color:var(--wh3); margin-top:6px; }
+.stat-delta { font-size:12px; color:var(--green); font-weight:600; margin-top:4px; }
 
-/* ── SCREEN 6: BOOKING ── */
-.service-type-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
-.svc-type {
-  background:var(--bk3); border:2px solid var(--br); border-radius:14px;
-  padding:18px 12px; text-align:center; cursor:pointer; transition:.2s;
+/* ─── HOME VIEW ─── */
+.hero-banner {
+  background:linear-gradient(135deg, #180800 0%, var(--bk3) 100%);
+  border:1px solid var(--br-or); border-radius:var(--radius-lg);
+  padding:32px 36px; margin-bottom:28px; display:flex; align-items:center; justify-content:space-between;
+  position:relative; overflow:hidden;
 }
-.svc-type.selected { border-color:var(--or); background:var(--or-dim); }
-.svc-type .svc-icon { font-size:28px; margin-bottom:8px; }
-.svc-type h4 { font-size:13px; font-weight:700; }
-.svc-type p { font-size:11px; color:var(--wh3); margin-top:4px; }
-.time-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:16px; }
-.time-slot { background:var(--bk3); border:1px solid var(--br); border-radius:10px; padding:10px; text-align:center; cursor:pointer; font-size:13px; font-weight:600; transition:.2s; }
-.time-slot.selected { border-color:var(--or); background:var(--or-dim); color:var(--or); }
+.hero-banner::before { content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px; background:radial-gradient(circle, var(--or-glow) 0%, transparent 70%); border-radius:50%; }
+.hero-banner::after { content:''; position:absolute; bottom:-40px; left:200px; width:140px; height:140px; background:radial-gradient(circle, rgba(255,90,0,0.08) 0%, transparent 70%); border-radius:50%; }
+.hero-badge { font-size:11px; font-weight:700; color:var(--or2); background:var(--or-dim); border:1px solid var(--br-or); padding:4px 12px; border-radius:100px; display:inline-block; margin-bottom:12px; letter-spacing:.5px; }
+.hero-title { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; line-height:1.2; margin-bottom:8px; }
+.hero-sub { font-size:14px; color:var(--wh3); margin-bottom:20px; }
+.hero-emoji { font-size:72px; position:relative; z-index:1; }
+.cat-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:10px; margin-bottom:28px; }
+.cat-item { background:var(--bk2); border:1px solid var(--br); border-radius:var(--radius); padding:16px 8px; text-align:center; cursor:pointer; transition:var(--transition); }
+.cat-item:hover { border-color:var(--br-or); background:var(--or-dim); transform:translateY(-2px); }
+.cat-icon { font-size:28px; margin-bottom:8px; }
+.cat-name { font-size:11px; color:var(--wh3); font-weight:600; }
+.promo-strip { display:flex; align-items:center; gap:16px; background:var(--bk3); border:1px solid var(--br); border-radius:var(--radius); padding:14px 20px; margin-bottom:24px; }
+.promo-strip p { font-size:13px; color:var(--wh3); flex:1; }
+.promo-code { font-family:'Syne',sans-serif; font-weight:700; color:var(--or); }
 
-/* ── SCREEN 7: PAYMENT ── */
-.pay-method { display:flex; align-items:center; gap:14px; background:var(--bk3); border:2px solid var(--br); border-radius:14px; padding:16px; cursor:pointer; margin-bottom:10px; transition:.2s; }
+/* ─── CATEGORY SECTION GRID ─── */
+.section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.see-all { font-size:13px; color:var(--or); cursor:pointer; font-weight:600; }
+.see-all:hover { text-decoration:underline; }
+
+/* ─── TECHNICIAN PROFILE VIEW ─── */
+.profile-layout { display:grid; grid-template-columns:320px 1fr; gap:24px; align-items:start; }
+.profile-sidebar { position:sticky; top:0; }
+.profile-card { background:var(--bk2); border:1px solid var(--br); border-radius:var(--radius-lg); padding:28px; text-align:center; }
+.profile-name { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; margin-top:14px; margin-bottom:4px; }
+.profile-spec { font-size:14px; color:var(--wh3); margin-bottom:12px; }
+.profile-rating { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:16px; }
+.profile-badges { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:20px; }
+.profile-stat-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+.p-stat { background:var(--bk3); border-radius:10px; padding:14px 10px; text-align:center; }
+.p-stat-num { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:var(--or); }
+.p-stat-lbl { font-size:10px; color:var(--wh3); margin-top:4px; }
+.score-ring { width:52px; height:52px; border-radius:50%; background:var(--or-dim); border:3px solid var(--or); display:flex; align-items:center; justify-content:center; flex-direction:column; margin:0 auto; }
+.score-num { font-family:'Syne',sans-serif; font-size:14px; font-weight:800; color:var(--or); }
+.score-lbl { font-size:7px; color:var(--or2); }
+.profile-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+/* services pricing table */
+.service-row { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--br); }
+.service-row:last-child { border-bottom:none; }
+.service-price { font-weight:700; color:var(--or); font-family:'Syne',sans-serif; }
+
+/* review card */
+.review-card { background:var(--bk3); border:1px solid var(--br); border-radius:var(--radius-sm); padding:16px; margin-bottom:10px; }
+.review-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.reviewer-name { font-size:13px; font-weight:700; }
+.review-date { font-size:11px; color:var(--wh3); margin-left:auto; }
+.review-text { font-size:13px; color:var(--wh3); line-height:1.6; }
+
+/* portfolio grid */
+.portfolio-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:20px; }
+.portfolio-item { background:var(--bk3); border-radius:10px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:32px; cursor:pointer; border:1px solid var(--br); transition:var(--transition); }
+.portfolio-item:hover { border-color:var(--br-or); transform:scale(1.02); }
+
+/* ─── BOOKING VIEW ─── */
+.booking-layout { display:grid; grid-template-columns:1fr 360px; gap:24px; align-items:start; }
+.booking-summary { position:sticky; top:0; background:var(--bk2); border:1px solid var(--br); border-radius:var(--radius-lg); padding:24px; }
+.summary-line { display:flex; justify-content:space-between; margin-bottom:10px; font-size:14px; }
+.summary-line .lbl { color:var(--wh3); }
+.summary-total { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:var(--or); }
+.svc-type-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px; }
+.svc-type { background:var(--bk3); border:2px solid var(--br); border-radius:var(--radius); padding:20px; text-align:center; cursor:pointer; transition:var(--transition); }
+.svc-type:hover { border-color:var(--br-or); }
+.svc-type.selected { border-color:var(--or); background:var(--or-dim); }
+.svc-icon { font-size:32px; margin-bottom:10px; }
+.svc-title { font-size:14px; font-weight:700; margin-bottom:4px; }
+.svc-desc { font-size:12px; color:var(--wh3); }
+.time-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:24px; }
+.time-slot { background:var(--bk3); border:1px solid var(--br); border-radius:8px; padding:11px; text-align:center; cursor:pointer; font-size:13px; font-weight:600; transition:var(--transition); }
+.time-slot:hover { border-color:var(--br-or); }
+.time-slot.selected { border-color:var(--or); background:var(--or-dim); color:var(--or); }
+.date-chips { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; }
+
+/* ─── PAYMENT VIEW ─── */
+.payment-layout { display:grid; grid-template-columns:1fr 380px; gap:24px; align-items:start; }
+.pay-method { display:flex; align-items:center; gap:16px; background:var(--bk3); border:2px solid var(--br); border-radius:var(--radius); padding:18px 20px; cursor:pointer; margin-bottom:10px; transition:var(--transition); }
+.pay-method:hover { border-color:var(--br-or); }
 .pay-method.selected { border-color:var(--or); background:var(--or-dim); }
-.pay-logo { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; background:var(--bk4); }
-.pay-method h4 { font-size:15px; font-weight:700; }
+.pay-logo { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:22px; background:var(--bk4); flex-shrink:0; }
+.pay-method h4 { font-size:15px; font-weight:700; margin-bottom:2px; }
 .pay-method p { font-size:12px; color:var(--wh3); }
-.pay-radio { width:20px; height:20px; border-radius:50%; border:2px solid var(--br); margin-left:auto; display:flex; align-items:center; justify-content:center; }
+.pay-radio { width:20px; height:20px; border-radius:50%; border:2px solid var(--br); margin-left:auto; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
 .pay-method.selected .pay-radio { border-color:var(--or); background:var(--or); }
 .pay-method.selected .pay-radio::after { content:''; width:8px; height:8px; background:#fff; border-radius:50%; }
+.promo-row { display:flex; gap:8px; }
+.promo-row .inp { flex:1; }
+.apply-btn { background:var(--or); border:none; border-radius:10px; padding:0 20px; color:white; font-weight:700; cursor:pointer; font-family:'Syne',sans-serif; font-size:14px; white-space:nowrap; transition:var(--transition); }
+.apply-btn:hover { background:var(--or2); }
 
-/* ── SCREEN 8: BOOKING CONFIRMATION ── */
-.confirm-hero { text-align:center; padding:30px 20px 20px; }
-.confirm-check { width:72px; height:72px; background:var(--or); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; margin:0 auto 16px; }
-.tracker { display:flex; flex-direction:column; gap:0; }
-.tracker-step { display:flex; gap:14px; align-items:flex-start; }
+/* ─── CONFIRM VIEW ─── */
+.confirm-layout { display:grid; grid-template-columns:1fr 360px; gap:24px; align-items:start; }
+.confirm-check { width:64px; height:64px; background:var(--or); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:16px; }
+.tracker { display:flex; flex-direction:column; }
+.tracker-step { display:flex; gap:16px; align-items:flex-start; }
 .tracker-dot-col { display:flex; flex-direction:column; align-items:center; }
-.tracker-dot { width:16px; height:16px; border-radius:50%; border:2px solid var(--br); flex-shrink:0; }
+.tracker-dot { width:16px; height:16px; border-radius:50%; border:2px solid var(--br); flex-shrink:0; margin-top:2px; }
 .tracker-dot.done { background:var(--or); border-color:var(--or); }
 .tracker-dot.active { border-color:var(--or); background:var(--or-dim); animation:pulse2 1.5s infinite; }
 @keyframes pulse2 { 0%,100%{box-shadow:0 0 0 0 rgba(255,90,0,.5)} 50%{box-shadow:0 0 0 6px rgba(255,90,0,0)} }
-.tracker-line { width:2px; flex:1; background:var(--br); min-height:28px; }
+.tracker-line { width:2px; flex:1; min-height:32px; background:var(--br); }
 .tracker-line.done { background:var(--or); }
-.tracker-info { padding-bottom:20px; }
+.tracker-info { padding-bottom:24px; }
 .tracker-title { font-size:14px; font-weight:700; margin-bottom:3px; }
 .tracker-sub { font-size:12px; color:var(--wh3); }
 
-/* ── SCREEN 9: REVIEW ── */
-.star-row { display:flex; justify-content:center; gap:10px; margin:20px 0; }
-.star-btn { font-size:36px; cursor:pointer; transition:.2s; filter:grayscale(1); opacity:.4; }
-.star-btn.lit { filter:none; opacity:1; transform:scale(1.15); }
+/* ─── BOOKINGS LIST VIEW ─── */
+.booking-card { background:var(--bk2); border:1px solid var(--br); border-radius:var(--radius); padding:20px; margin-bottom:12px; cursor:pointer; transition:var(--transition); }
+.booking-card:hover { border-color:var(--br-or); }
+.booking-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.booking-tech-row { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+.booking-footer { display:flex; align-items:center; justify-content:space-between; }
+.booking-amount { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:var(--or); }
 
-/* ── SCREEN 10: PROFILE (CUSTOMER) ── */
-.profile-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:16px 0; }
-.p-stat { background:var(--bk3); border-radius:12px; padding:14px; text-align:center; }
-.p-stat-num { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:var(--or); }
-.p-stat-lbl { font-size:11px; color:var(--wh3); margin-top:3px; }
+/* ─── MESSAGES VIEW ─── */
+.messages-layout { display:grid; grid-template-columns:300px 1fr; gap:0; border:1px solid var(--br); border-radius:var(--radius-lg); overflow:hidden; height:calc(100vh - var(--topbar-h) - 56px - 28px); }
+.msg-list { background:var(--bk2); border-right:1px solid var(--br); overflow-y:auto; }
+.msg-item { display:flex; align-items:center; gap:12px; padding:16px; border-bottom:1px solid var(--br); cursor:pointer; transition:var(--transition); }
+.msg-item:hover, .msg-item.active { background:var(--bk3); }
+.msg-item.unread { background:rgba(255,90,0,0.04); }
+.msg-meta { flex:1; min-width:0; }
+.msg-name { font-size:14px; font-weight:700; margin-bottom:3px; }
+.msg-preview { font-size:12px; color:var(--wh3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.msg-time { font-size:11px; color:var(--wh3); }
+.unread-dot { width:8px; height:8px; background:var(--or); border-radius:50%; flex-shrink:0; }
+.chat-pane { display:flex; flex-direction:column; background:var(--bk); }
+.chat-topbar { display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid var(--br); background:var(--bk2); }
+.chat-messages { flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:14px; }
+.bubble { max-width:60%; padding:12px 16px; border-radius:4px 16px 16px 16px; font-size:14px; line-height:1.5; }
+.bubble.in { background:var(--bk3); border-radius:4px 16px 16px 16px; }
+.bubble.out { background:var(--or); color:white; border-radius:16px 4px 16px 16px; align-self:flex-end; }
+.bubble-wrap { display:flex; flex-direction:column; }
+.bubble-wrap.out { align-items:flex-end; }
+.bubble-time { font-size:11px; color:var(--wh3); margin-top:4px; }
+.chat-input-bar { padding:16px 20px; border-top:1px solid var(--br); background:var(--bk2); display:flex; gap:10px; align-items:center; }
+.chat-input-bar .inp { flex:1; margin:0; padding:12px 16px; }
+.send-btn { width:42px; height:42px; background:var(--or); border:none; border-radius:10px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition:var(--transition); flex-shrink:0; }
+.send-btn:hover { background:var(--or2); }
 
-/* ── SCREEN 11: NOTIFICATIONS ── */
-.notif-item { display:flex; gap:12px; padding:14px 20px; border-bottom:1px solid var(--br); cursor:pointer; transition:.15s; }
-.notif-item:active { background:var(--bk3); }
-.notif-item.unread { background:rgba(255,90,0,0.04); }
-.notif-icon-wrap { width:40px; height:40px; background:var(--or-dim); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-.notif-text h4 { font-size:14px; font-weight:600; margin-bottom:3px; }
-.notif-text p { font-size:12px; color:var(--wh3); line-height:1.5; }
-.notif-time { font-size:11px; color:var(--wh3); margin-top:4px; }
+/* ─── REVIEW VIEW ─── */
+.star-row { display:flex; justify-content:center; gap:12px; margin:20px 0; }
+.star-btn { font-size:40px; cursor:pointer; transition:var(--transition); filter:grayscale(1); opacity:.35; }
+.star-btn.lit { filter:none; opacity:1; transform:scale(1.1); }
+.review-quick-tags { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; }
 
-/* ── SCREEN 12: TECHNICIAN DASHBOARD ── */
-.earn-card { background:linear-gradient(135deg, #1a0a00 0%, var(--bk2) 100%); border:1px solid var(--br-or); border-radius:20px; padding:24px 20px; margin-bottom:20px; position:relative; overflow:hidden; }
-.earn-card::before { content:''; position:absolute; top:-40px; right:-40px; width:120px; height:120px; border-radius:50%; background:rgba(255,90,0,0.1); }
-.earn-amount { font-family:'Syne',sans-serif; font-size:36px; font-weight:800; color:var(--or); }
-.earn-label { font-size:13px; color:var(--wh3); margin-top:4px; }
-.job-card { display:flex; gap:12px; align-items:center; background:var(--bk3); border:1px solid var(--br); border-radius:14px; padding:14px; margin-bottom:10px; cursor:pointer; transition:.2s; }
-.job-card:active { border-color:var(--br-or); }
-.job-status { font-size:11px; font-weight:700; padding:4px 10px; border-radius:100px; }
-.job-status.new { background:rgba(255,90,0,0.15); color:var(--or); border:1px solid var(--br-or); }
-.job-status.prog { background:rgba(34,197,94,0.12); color:#22c55e; border:1px solid rgba(34,197,94,0.25); }
+/* ─── PROFILE VIEW ─── */
+.profile-page-layout { display:grid; grid-template-columns:300px 1fr; gap:24px; align-items:start; }
+.profile-info-card { background:var(--bk2); border:1px solid var(--br); border-radius:var(--radius-lg); padding:28px; text-align:center; margin-bottom:16px; }
+.profile-menu-card { background:var(--bk2); border:1px solid var(--br); border-radius:var(--radius); overflow:hidden; margin-bottom:12px; }
+.menu-row { display:flex; align-items:center; gap:12px; padding:16px 18px; border-bottom:1px solid var(--br); cursor:pointer; transition:var(--transition); }
+.menu-row:last-child { border-bottom:none; }
+.menu-row:hover { background:var(--bk3); }
+.menu-row-icon { font-size:18px; width:22px; flex-shrink:0; }
+.menu-row-label { font-size:14px; font-weight:600; flex:1; }
+.menu-row-right { font-size:13px; color:var(--wh3); }
 
-/* ── SCREEN: SEARCH RESULTS ── */
-.filter-bar { display:flex; gap:8px; padding:0 20px 16px; overflow-x:auto; }
-.filter-bar::-webkit-scrollbar { display:none; }
+/* ─── NOTIFICATIONS VIEW ─── */
+.notif-item { display:flex; gap:14px; padding:18px; border-bottom:1px solid var(--br); cursor:pointer; transition:var(--transition); }
+.notif-item:hover { background:var(--bk3); }
+.notif-item.unread { background:rgba(255,90,0,0.03); }
+.notif-icon-wrap { width:44px; height:44px; background:var(--or-dim); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.notif-text h4 { font-size:14px; font-weight:700; margin-bottom:4px; }
+.notif-text p { font-size:13px; color:var(--wh3); line-height:1.5; }
+.notif-time { font-size:11px; color:var(--wh3); margin-top:5px; }
 
-/* TOAST */
-.toast {
-  position:absolute; bottom:100px; left:20px; right:20px;
-  background:var(--bk3); border:1px solid var(--or); border-radius:14px;
-  padding:14px 18px; display:flex; align-items:center; gap:10px;
-  z-index:999; opacity:0; transform:translateY(10px);
-  transition:.3s; pointer-events:none;
+/* ─── TECH DASHBOARD VIEW ─── */
+.tech-dash-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+.earn-card { background:linear-gradient(135deg, #1a0800 0%, var(--bk2) 100%); border:1px solid var(--br-or); border-radius:var(--radius-lg); padding:28px; position:relative; overflow:hidden; }
+.earn-card::before { content:''; position:absolute; top:-50px; right:-50px; width:150px; height:150px; border-radius:50%; background:rgba(255,90,0,.08); }
+.earn-amount { font-family:'Syne',sans-serif; font-size:42px; font-weight:800; color:var(--or); }
+.earn-label { font-size:13px; color:var(--wh3); margin-top:6px; }
+.job-card { display:flex; align-items:center; gap:14px; background:var(--bk3); border:1px solid var(--br); border-radius:var(--radius-sm); padding:16px 18px; margin-bottom:10px; cursor:pointer; transition:var(--transition); }
+.job-card:hover { border-color:var(--br-or); }
+.job-status { font-size:11px; font-weight:700; padding:4px 10px; border-radius:100px; margin-left:auto; white-space:nowrap; }
+.job-status.new { background:rgba(255,90,0,.15); color:var(--or); border:1px solid var(--br-or); }
+.job-status.prog { background:rgba(34,197,94,.12); color:var(--green); border:1px solid rgba(34,197,94,.25); }
+.tech-dash-layout { display:grid; grid-template-columns:1fr 320px; gap:24px; }
+
+/* ─── SIGNUP / LOGIN VIEW ─── */
+.auth-layout { display:grid; grid-template-columns:1fr 1fr; gap:0; min-height:calc(100vh - var(--topbar-h)); }
+.auth-left { background:linear-gradient(160deg, #0d0d0d 0%, #1a0800 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px; text-align:center; position:relative; overflow:hidden; }
+.auth-glow { position:absolute; width:300px; height:300px; border-radius:50%; background:radial-gradient(circle, rgba(255,90,0,0.2) 0%, transparent 70%); }
+.auth-left h1 { font-family:'Syne',sans-serif; font-size:40px; font-weight:800; line-height:1.2; margin-bottom:16px; position:relative; z-index:1; }
+.auth-left p { font-size:16px; color:var(--wh3); position:relative; z-index:1; max-width:320px; }
+.auth-features { margin-top:40px; display:flex; flex-direction:column; gap:14px; position:relative; z-index:1; width:100%; max-width:320px; }
+.auth-feat { display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.05); border:1px solid var(--br); border-radius:12px; padding:14px 16px; text-align:left; }
+.auth-feat .feat-icon { font-size:22px; }
+.auth-feat h4 { font-size:13px; font-weight:700; margin-bottom:2px; }
+.auth-feat p { font-size:12px; color:var(--wh3); }
+.auth-right { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 80px; overflow-y:auto; }
+.auth-form { width:100%; max-width:400px; }
+.auth-form h2 { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; margin-bottom:6px; }
+.auth-form p { color:var(--wh3); font-size:14px; margin-bottom:28px; }
+.acc-type-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px; }
+.acc-type { background:var(--bk3); border:2px solid var(--br); border-radius:var(--radius-sm); padding:18px; text-align:center; cursor:pointer; transition:var(--transition); }
+.acc-type:hover { border-color:var(--br-or); }
+.acc-type.selected { border-color:var(--or); background:var(--or-dim); }
+.acc-type .type-icon { font-size:28px; margin-bottom:8px; }
+.acc-type h4 { font-size:13px; font-weight:700; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.input-wrap { margin-bottom:16px; }
+.forgot-link { color:var(--or); font-size:13px; cursor:pointer; display:block; text-align:right; margin-top:-8px; margin-bottom:16px; }
+.auth-switch { font-size:13px; color:var(--wh3); text-align:center; margin-top:16px; }
+.auth-switch span { color:var(--or); cursor:pointer; font-weight:600; }
+
+/* ─── TOAST ─── */
+#toast {
+  position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(8px);
+  background:var(--bk3); border:1px solid var(--or); border-radius:12px;
+  padding:12px 20px; display:flex; align-items:center; gap:10px; z-index:9999;
+  opacity:0; transition:.3s; pointer-events:none; min-width:260px; max-width:400px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
 }
-.toast.show { opacity:1; transform:translateY(0); }
-.toast-icon { font-size:20px; }
-.toast-text { font-size:14px; font-weight:600; }
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+#toast-text { font-size:14px; font-weight:600; }
+
+/* ─── SPLASHSCREEN OVERRIDE (redirect to login) ─── */
 </style>
 </head>
 <body>
+<div class="app" id="app">
 
-<div class="phone-wrap">
-<div class="phone-frame">
-  <div class="phone-notch"></div>
-  <div class="phone-screen">
-
-  <!-- ═══════════════ SPLASH ═══════════════ -->
-  <div class="screen active" id="s-splash">
-    <div class="splash-glow"></div>
-    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-      <div style="font-size:64px; margin-bottom:20px;">🔧</div>
-      <div class="splash-logo">Fix<span>Hub</span> PH</div>
-      <div class="splash-tag">Your Trusted Tech & Appliance<br>Repair Marketplace</div>
+  <!-- ══════════════════════════════ TOP BAR ══════════════════════════════ -->
+  <header class="topbar">
+    <div class="logo">
+      <span class="logo-icon">🔧</span>
+      <span class="logo-text">Fix<span>Hub</span> PH</span>
     </div>
-    <div class="splash-btns">
-      <button class="btn-or" onclick="go('s-login')">Log In</button>
-      <button class="btn-ghost" onclick="go('s-signup')">Create Account</button>
-      <p style="text-align:center; font-size:12px; color:var(--wh3); margin-top:8px;">Launching in San Pablo City, Laguna 🇵🇭</p>
+    <div class="topbar-search">
+      <span style="font-size:16px;">🔍</span>
+      <input placeholder="Search technicians, services, or categories..." onclick="nav('search')">
     </div>
-  </div>
-
-  <!-- ═══════════════ LOGIN ═══════════════ -->
-  <div class="screen" id="s-login">
-    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><span>📶</span><span>🔋</span></div></div>
-    <div class="login-top">
-      <div style="font-size:40px; margin-bottom:12px;">👋</div>
-      <h2>Welcome Back</h2>
-      <p>Log in to your FixHub PH account</p>
-    </div>
-    <div class="form-scroll">
-      <div class="input-wrap"><label>Email</label><input class="inp" type="email" placeholder="yourname@email.com"></div>
-      <div class="input-wrap"><label>Password</label><input class="inp" type="password" placeholder="••••••••"></div>
-      <span class="forgot" onclick="showToast('📧 Reset link sent to your email!')">Forgot Password?</span>
-      <button class="btn-or" onclick="go('s-home')" style="margin-bottom:12px;">Log In</button>
-      <button class="btn-ghost" onclick="go('s-signup')">Don't have an account? Sign Up</button>
-      <div style="margin-top:20px; text-align:center;">
-        <p style="font-size:12px; color:var(--wh3);">Are you a technician?</p>
-        <span onclick="go('s-tech-dash')" style="color:var(--or); font-size:13px; font-weight:700; cursor:pointer;">Log in as Technician →</span>
+    <div class="topbar-actions">
+      <div class="icon-btn" onclick="nav('notifs')">🔔<div class="notif-badge">3</div></div>
+      <div class="user-chip" onclick="nav('profile')">
+        <div class="avatar">JD</div>
+        <span class="user-name">Juan dela Cruz</span>
       </div>
     </div>
-  </div>
+  </header>
 
-  <!-- ═══════════════ SIGN UP ═══════════════ -->
-  <div class="screen" id="s-signup">
-    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><span>📶</span><span>🔋</span></div></div>
-    <div class="top-bar">
-      <button class="back-btn" onclick="goBack('s-splash')">←</button>
-      <span class="top-title">Create Account</span>
-      <div style="width:36px"></div>
+  <!-- ══════════════════════════════ SIDEBAR ══════════════════════════════ -->
+  <aside class="sidebar">
+    <div class="nav-section-label">Main</div>
+    <div class="nav-link active" id="nl-home" onclick="nav('home')"><span class="nav-icon">🏠</span>Home</div>
+    <div class="nav-link" id="nl-search" onclick="nav('search')"><span class="nav-icon">🔍</span>Find Technicians</div>
+    <div class="nav-link" id="nl-bookings" onclick="nav('bookings')"><span class="nav-icon">📋</span>My Bookings<span class="nav-badge">1</span></div>
+    <div class="nav-link" id="nl-messages" onclick="nav('messages')"><span class="nav-icon">💬</span>Messages<span class="nav-badge">1</span></div>
+
+    <div class="nav-section-label">Account</div>
+    <div class="nav-link" id="nl-profile" onclick="nav('profile')"><span class="nav-icon">👤</span>My Profile</div>
+    <div class="nav-link" id="nl-notifs" onclick="nav('notifs')"><span class="nav-icon">🔔</span>Notifications<span class="nav-badge">3</span></div>
+
+    <div class="nav-section-label">Other</div>
+    <div class="nav-link" onclick="showToast('⭐ Saved technicians opened')"><span class="nav-icon">❤️</span>Saved</div>
+    <div class="nav-link" onclick="showToast('🧾 Receipts loaded')"><span class="nav-icon">🧾</span>Receipts</div>
+    <div class="nav-link" onclick="showToast('❓ Help center opened')"><span class="nav-icon">❓</span>Help & Support</div>
+    <div class="nav-link" onclick="nav('login')" style="color:#ef4444;"><span class="nav-icon">🚪</span>Log Out</div>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-tech-switch">
+        <h4>Are you a Technician?</h4>
+        <p>Switch to your technician dashboard</p>
+        <button class="btn-or-sm" onclick="nav('tech-dash')">🔧 Technician View</button>
+      </div>
     </div>
-    <div class="form-scroll">
-      <p style="color:var(--wh3); font-size:13px; margin-bottom:16px;">Join FixHub PH — choose your account type</p>
-      <div class="acc-type-row">
-        <div class="acc-type selected" id="at-customer" onclick="selectAccType('customer')">
-          <div class="type-icon">👤</div>
-          <h4>Customer</h4>
+  </aside>
+
+  <!-- ══════════════════════════════ MAIN ══════════════════════════════ -->
+  <main class="main">
+
+    <!-- ─── LOGIN ─── -->
+    <div class="view active" id="v-login" style="padding:0;">
+      <div class="auth-layout">
+        <div class="auth-left">
+          <div class="auth-glow"></div>
+          <div style="font-size:56px; margin-bottom:20px; position:relative; z-index:1;">🔧</div>
+          <h1 style="position:relative;z-index:1;">Fix anything,<br><span style="color:var(--or);">anytime.</span></h1>
+          <p>Connect with trusted repair technicians in San Pablo City, Laguna.</p>
+          <div class="auth-features">
+            <div class="auth-feat"><span class="feat-icon">⚡</span><div><h4>Fast Booking</h4><p>Book a technician in under 2 minutes</p></div></div>
+            <div class="auth-feat"><span class="feat-icon">🛡️</span><div><h4>Verified Experts</h4><p>All techs are ID-verified & rated</p></div></div>
+            <div class="auth-feat"><span class="feat-icon">💙</span><div><h4>GCash & Maya</h4><p>Secure cashless payments</p></div></div>
+          </div>
         </div>
-        <div class="acc-type" id="at-tech" onclick="selectAccType('tech')">
-          <div class="type-icon">🔧</div>
-          <h4>Technician</h4>
+        <div class="auth-right">
+          <div class="auth-form">
+            <div style="font-size:36px; margin-bottom:16px;">👋</div>
+            <h2>Welcome Back</h2>
+            <p>Log in to your FixHub PH account</p>
+            <div class="input-wrap"><label class="input-label">Email</label><input class="inp" type="email" placeholder="yourname@email.com"></div>
+            <div class="input-wrap"><label class="input-label">Password</label><input class="inp" type="password" placeholder="••••••••"></div>
+            <span class="forgot-link" onclick="showToast('📧 Reset link sent to your email!')">Forgot Password?</span>
+            <button class="btn-or" style="width:100%; margin-bottom:12px;" onclick="nav('home')">Log In</button>
+            <button class="btn-ghost" style="width:100%;" onclick="nav('signup')">Don't have an account? Sign Up</button>
+            <div style="margin-top:24px; text-align:center; padding:16px; background:var(--bk3); border-radius:12px; border:1px solid var(--br);">
+              <p style="font-size:13px; color:var(--wh3); margin-bottom:8px;">Are you a technician?</p>
+              <span onclick="nav('tech-dash')" style="color:var(--or); font-size:14px; font-weight:700; cursor:pointer;">Log in as Technician →</span>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="input-wrap"><label>Full Name</label><input class="inp" placeholder="Juan dela Cruz"></div>
-      <div class="input-wrap"><label>Email</label><input class="inp" type="email" placeholder="juan@email.com"></div>
-      <div class="input-wrap"><label>Password</label><input class="inp" type="password" placeholder="Create a strong password"></div>
-      <div class="input-wrap"><label>Valid Government ID</label>
-        <div onclick="showToast('📁 File picker opened')" style="background:var(--bk3); border:1px dashed var(--br); border-radius:12px; padding:20px; text-align:center; cursor:pointer;">
-          <div style="font-size:24px; margin-bottom:6px;">📎</div>
-          <p style="font-size:13px; color:var(--wh3);">Tap to upload ID photo</p>
+    </div>
+
+    <!-- ─── SIGNUP ─── -->
+    <div class="view" id="v-signup" style="padding:0;">
+      <div class="auth-layout">
+        <div class="auth-left">
+          <div class="auth-glow"></div>
+          <div style="font-size:56px; margin-bottom:20px; position:relative; z-index:1;">🚀</div>
+          <h1 style="position:relative;z-index:1;">Join<br><span style="color:var(--or);">FixHub PH</span></h1>
+          <p>Your one-stop marketplace for trusted repair technicians. Free to sign up!</p>
+          <div class="auth-features">
+            <div class="auth-feat"><span class="feat-icon">📱</span><div><h4>For Customers</h4><p>Book repairs & track your jobs in real time</p></div></div>
+            <div class="auth-feat"><span class="feat-icon">🔧</span><div><h4>For Technicians</h4><p>Grow your business & earn more</p></div></div>
+          </div>
+        </div>
+        <div class="auth-right">
+          <div class="auth-form">
+            <h2>Create Account</h2>
+            <p>Choose your account type to get started</p>
+            <div class="acc-type-row">
+              <div class="acc-type selected" id="at-customer" onclick="selectAccType('customer')"><div class="type-icon">👤</div><h4>Customer</h4></div>
+              <div class="acc-type" id="at-tech" onclick="selectAccType('tech')"><div class="type-icon">🔧</div><h4>Technician</h4></div>
+            </div>
+            <div class="form-row">
+              <div class="input-wrap"><label class="input-label">First Name</label><input class="inp" placeholder="Juan"></div>
+              <div class="input-wrap"><label class="input-label">Last Name</label><input class="inp" placeholder="dela Cruz"></div>
+            </div>
+            <div class="input-wrap"><label class="input-label">Email</label><input class="inp" type="email" placeholder="juan@email.com"></div>
+            <div class="input-wrap"><label class="input-label">Password</label><input class="inp" type="password" placeholder="Create a strong password"></div>
+            <div class="input-wrap"><label class="input-label">Valid Government ID</label>
+              <div onclick="showToast('📁 File picker opened')" style="background:var(--bk3); border:1px dashed var(--br); border-radius:10px; padding:20px; text-align:center; cursor:pointer; transition:var(--transition);" onmouseover="this.style.borderColor='var(--br-or)'" onmouseout="this.style.borderColor='var(--br)'">
+                <div style="font-size:24px; margin-bottom:6px;">📎</div><p style="font-size:13px; color:var(--wh3);">Click to upload ID photo</p>
+              </div>
+            </div>
+            <button class="btn-or" style="width:100%; margin-bottom:12px;" onclick="nav('home')">Create Account</button>
+            <div class="auth-switch">Already have an account? <span onclick="nav('login')">Log In</span></div>
+          </div>
         </div>
       </div>
-      <button class="btn-or" onclick="go('s-home')" style="margin-bottom:10px;">Create Account</button>
-      <button class="btn-ghost" onclick="goBack('s-splash')">Already have an account? Log In</button>
     </div>
-  </div>
 
-  <!-- ═══════════════ HOME DASHBOARD ═══════════════ -->
-  <div class="screen" id="s-home">
-    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><span>📶</span><span>🔋</span></div></div>
-    <div class="home-header">
-      <div class="home-header-row">
+    <!-- ─── HOME ─── -->
+    <div class="view" id="v-home">
+      <div class="hero-banner">
         <div>
-          <div class="home-greeting">Good morning,</div>
-          <div class="home-name">Juan dela Cruz 👋</div>
+          <div class="hero-badge">🇵🇭 LAUNCHING IN SAN PABLO CITY</div>
+          <div class="hero-title">Your trusted repair<br>marketplace is here.</div>
+          <div class="hero-sub">Book verified technicians for phones, laptops, appliances & more.</div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-or" onclick="nav('search')">🔍 Find a Technician</button>
+            <button class="btn-ghost" onclick="nav('signup')">Learn More</button>
+          </div>
         </div>
-        <button class="notif-btn" onclick="go('s-notifs')">🔔</button>
+        <div class="hero-emoji">🔧</div>
       </div>
-    </div>
-    <div class="content" style="padding-top:16px;">
-      <div class="search-bar" onclick="go('s-search')">
-        <span>🔍</span>
-        <input placeholder="Search technicians, services..." readonly>
+
+      <div class="promo-strip">
+        <span style="font-size:24px;">🎉</span>
+        <p><strong>Weekend Promo:</strong> Free booking fee this weekend! Use code <span class="promo-code">FIXHUB25</span> at checkout.</p>
+        <button class="btn-or" style="padding:8px 18px; font-size:13px;" onclick="nav('booking')">Book Now</button>
       </div>
-      <!-- PROMO BANNER -->
-      <div style="background:linear-gradient(135deg,#1a0a00,var(--bk3)); border:1px solid var(--br-or); border-radius:18px; padding:18px 20px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <div class="tag" style="margin-bottom:8px;">LIMITED OFFER</div>
-          <div style="font-family:'Syne',sans-serif; font-size:17px; font-weight:800;">Free booking fee<br>this weekend!</div>
-          <div style="font-size:12px; color:var(--wh3); margin-top:4px;">Use code: FIXHUB25</div>
-        </div>
-        <div style="font-size:52px;">🎉</div>
+
+      <div class="section-header">
+        <h2 class="section-label" style="margin:0;">Categories</h2>
       </div>
-      <!-- CATEGORIES -->
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-        <h3 style="font-family:'Syne',sans-serif; font-size:16px; font-weight:700;">Categories</h3>
+      <div class="cat-grid" style="margin-bottom:28px;">
+        <div class="cat-item" onclick="nav('search')"><div class="cat-icon">📱</div><div class="cat-name">Phones</div></div>
+        <div class="cat-item" onclick="nav('search')"><div class="cat-icon">💻</div><div class="cat-name">Laptops</div></div>
+        <div class="cat-item" onclick="nav('search')"><div class="cat-icon">❄️</div><div class="cat-name">Aircon</div></div>
+        <div class="cat-item" onclick="nav('search')"><div class="cat-icon">📺</div><div class="cat-name">TV</div></div>
+        <div class="cat-item" onclick="nav('search')"><div class="cat-icon">🧊</div><div class="cat-name">Ref</div></div>
+        <div class="cat-item" onclick="nav('search')"><div class="cat-icon">👕</div><div class="cat-name">Washer</div></div>
+        <div class="cat-item" onclick="nav('search')"><div class="cat-icon">🖨️</div><div class="cat-name">Printer</div></div>
+        <div class="cat-item" onclick="nav('search')"><div class="cat-icon">🎮</div><div class="cat-name">Console</div></div>
       </div>
-      <div class="cat-grid">
-        <div class="cat-item" onclick="go('s-search')"><div class="cat-icon">📱</div><span>Phones</span></div>
-        <div class="cat-item" onclick="go('s-search')"><div class="cat-icon">💻</div><span>Laptops</span></div>
-        <div class="cat-item" onclick="go('s-search')"><div class="cat-icon">❄️</div><span>Aircon</span></div>
-        <div class="cat-item" onclick="go('s-search')"><div class="cat-icon">📺</div><span>TV</span></div>
-        <div class="cat-item" onclick="go('s-search')"><div class="cat-icon">🧊</div><span>Ref</span></div>
-        <div class="cat-item" onclick="go('s-search')"><div class="cat-icon">👕</div><span>Washer</span></div>
-        <div class="cat-item" onclick="go('s-search')"><div class="cat-icon">🖨️</div><span>Printer</span></div>
-        <div class="cat-item" onclick="go('s-search')"><div class="cat-icon">🎮</div><span>Console</span></div>
+
+      <div class="section-header">
+        <h2 class="section-label" style="margin:0;">Nearby Technicians</h2>
+        <span class="see-all" onclick="nav('search')">See all →</span>
       </div>
-      <!-- NEARBY TECHNICIANS -->
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-        <h3 style="font-family:'Syne',sans-serif; font-size:16px; font-weight:700;">Nearby Technicians</h3>
-        <span onclick="go('s-search')" style="font-size:13px; color:var(--or); cursor:pointer; font-weight:600;">See all</span>
-      </div>
-      <div class="tech-card" onclick="go('s-tech-profile')">
-        <div class="avatar">MR</div>
+      <div class="tech-row" onclick="nav('tech-profile')">
+        <div class="avatar md">MR</div>
         <div class="tech-info">
           <div class="tech-name">Mang Romy Dela Cruz</div>
           <div class="tech-spec">📱 Phone & Laptop Repair</div>
-          <div class="tech-meta">
-            <span class="stars">★★★★★</span>
-            <span style="font-size:12px; color:var(--wh3);">4.9 (127)</span>
-            <span class="dot-open"></span>
-            <span style="font-size:12px; color:var(--wh3);">Open</span>
-          </div>
+          <div class="tech-meta"><span class="stars">★★★★★</span><span style="font-size:13px;color:var(--wh3)">4.9 (127)</span><span class="dot-open"></span><span style="font-size:13px;color:var(--green);">Open</span></div>
         </div>
         <div style="text-align:right;">
-          <div class="tech-rate">₱250</div>
-          <div style="font-size:11px; color:var(--wh3);">per hour</div>
-          <div class="fixer-score" style="margin-top:4px;">⚡94/100</div>
+          <div class="tech-rate">₱250/hr</div><div style="font-size:11px;color:var(--wh3);">home service</div>
+          <span class="score-pill" style="display:inline-block;margin-top:6px;">⚡ 94/100</span>
+        </div>
+        <div class="tech-actions">
+          <button class="btn-ghost" style="padding:9px 16px;font-size:13px;" onclick="event.stopPropagation();nav('messages')">💬 Chat</button>
+          <button class="btn-or" style="padding:9px 16px;font-size:13px;" onclick="event.stopPropagation();nav('booking')">Book Now</button>
         </div>
       </div>
-      <div class="tech-card" onclick="go('s-tech-profile')">
-        <div class="avatar">AJ</div>
+      <div class="tech-row" onclick="nav('tech-profile')">
+        <div class="avatar md">AJ</div>
         <div class="tech-info">
           <div class="tech-name">Ate Joy Santos</div>
           <div class="tech-spec">❄️ Aircon Specialist</div>
-          <div class="tech-meta">
-            <span class="stars">★★★★★</span>
-            <span style="font-size:12px; color:var(--wh3);">4.8 (89)</span>
-            <span class="dot-open"></span>
-            <span style="font-size:12px; color:var(--wh3);">Open</span>
-          </div>
+          <div class="tech-meta"><span class="stars">★★★★★</span><span style="font-size:13px;color:var(--wh3)">4.8 (89)</span><span class="dot-open"></span><span style="font-size:13px;color:var(--green);">Open</span></div>
         </div>
         <div style="text-align:right;">
-          <div class="tech-rate">₱500</div>
-          <div style="font-size:11px; color:var(--wh3);">service fee</div>
-          <div class="fixer-score" style="margin-top:4px;">⚡91/100</div>
+          <div class="tech-rate">₱500</div><div style="font-size:11px;color:var(--wh3);">service fee</div>
+          <span class="score-pill" style="display:inline-block;margin-top:6px;">⚡ 91/100</span>
+        </div>
+        <div class="tech-actions">
+          <button class="btn-ghost" style="padding:9px 16px;font-size:13px;" onclick="event.stopPropagation();nav('messages')">💬 Chat</button>
+          <button class="btn-or" style="padding:9px 16px;font-size:13px;" onclick="event.stopPropagation();nav('booking')">Book Now</button>
         </div>
       </div>
-      <div class="tech-card" onclick="go('s-tech-profile')">
-        <div class="avatar">KP</div>
+      <div class="tech-row" onclick="nav('tech-profile')">
+        <div class="avatar md">KP</div>
         <div class="tech-info">
           <div class="tech-name">Kuya Paolo Tech</div>
           <div class="tech-spec">💻 PC & Data Recovery</div>
-          <div class="tech-meta">
-            <span class="stars">★★★★☆</span>
-            <span style="font-size:12px; color:var(--wh3);">4.6 (54)</span>
-            <span class="dot-busy"></span>
-            <span style="font-size:12px; color:var(--wh3);">Busy</span>
-          </div>
+          <div class="tech-meta"><span class="stars">★★★★☆</span><span style="font-size:13px;color:var(--wh3)">4.6 (54)</span><span class="dot-busy"></span><span style="font-size:13px;color:var(--amber);">Busy</span></div>
         </div>
         <div style="text-align:right;">
-          <div class="tech-rate">₱300</div>
-          <div style="font-size:11px; color:var(--wh3);">per hour</div>
-          <div class="fixer-score" style="margin-top:4px;">⚡88/100</div>
+          <div class="tech-rate">₱300/hr</div><div style="font-size:11px;color:var(--wh3);">home service</div>
+          <span class="score-pill" style="display:inline-block;margin-top:6px;">⚡ 88/100</span>
+        </div>
+        <div class="tech-actions">
+          <button class="btn-ghost" style="padding:9px 16px;font-size:13px;" onclick="event.stopPropagation();nav('messages')">💬 Chat</button>
+          <button class="btn-or" style="padding:9px 16px;font-size:13px; opacity:.5;" disabled>Busy</button>
         </div>
       </div>
-    </div>
-    <div class="bottom-nav">
-      <div class="nav-item active" onclick="go('s-home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
-      <div class="nav-item" onclick="go('s-search')"><div class="nav-icon">🔍</div><div class="nav-label">Search</div></div>
-      <div class="nav-item" onclick="go('s-bookings')"><div class="nav-icon">📋</div><div class="nav-label">Bookings</div></div>
-      <div class="nav-item" onclick="go('s-messages')"><div class="nav-icon">💬</div><div class="nav-label">Messages</div></div>
-      <div class="nav-item" onclick="go('s-profile')"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
-    </div>
-  </div>
-
-  <!-- ═══════════════ SEARCH ═══════════════ -->
-  <div class="screen" id="s-search">
-    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><span>📶</span><span>🔋</span></div></div>
-    <div style="padding:0 20px 0;">
-      <h2 style="font-family:'Syne',sans-serif; font-size:20px; font-weight:800; margin-bottom:14px;">Find Technicians</h2>
-      <div class="search-bar"><span>🔍</span><input placeholder="e.g. phone screen repair..." autofocus></div>
-    </div>
-    <div class="chip-row" style="padding:0 20px 0;">
-      <div class="chip active">All</div>
-      <div class="chip">📱 Phones</div>
-      <div class="chip">💻 Laptops</div>
-      <div class="chip">❄️ Aircon</div>
-      <div class="chip">📺 TV</div>
-      <div class="chip">🧊 Ref</div>
-    </div>
-    <div style="padding:0 20px; display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <span style="font-size:13px; color:var(--wh3);">24 technicians found</span>
-      <span style="font-size:13px; color:var(--or); cursor:pointer; font-weight:600;">⚙️ Filters</span>
-    </div>
-    <div class="content">
-      <div class="tech-card" onclick="go('s-tech-profile')">
-        <div class="avatar">MR</div>
-        <div class="tech-info">
-          <div class="tech-name">Mang Romy Dela Cruz</div>
-          <div class="tech-spec">📱 Phone & Laptop Repair</div>
-          <div class="tech-meta"><span class="stars">★★★★★</span><span style="font-size:12px;color:var(--wh3)">4.9 (127)</span><span class="dot-open"></span><span style="font-size:12px;color:var(--wh3)">Open</span></div>
-        </div>
-        <div style="text-align:right;"><div class="tech-rate">₱250</div><div class="fixer-score" style="margin-top:4px;">⚡94</div></div>
-      </div>
-      <div class="tech-card" onclick="go('s-tech-profile')">
-        <div class="avatar">AJ</div>
-        <div class="tech-info">
-          <div class="tech-name">Ate Joy Santos</div>
-          <div class="tech-spec">❄️ Aircon Specialist</div>
-          <div class="tech-meta"><span class="stars">★★★★★</span><span style="font-size:12px;color:var(--wh3)">4.8 (89)</span><span class="dot-open"></span><span style="font-size:12px;color:var(--wh3)">Open</span></div>
-        </div>
-        <div style="text-align:right;"><div class="tech-rate">₱500</div><div class="fixer-score" style="margin-top:4px;">⚡91</div></div>
-      </div>
-      <div class="tech-card" onclick="go('s-tech-profile')">
-        <div class="avatar">BD</div>
+      <div class="tech-row" onclick="nav('tech-profile')">
+        <div class="avatar md">BD</div>
         <div class="tech-info">
           <div class="tech-name">Boss Danny Repair</div>
           <div class="tech-spec">📺 TV & Electronics</div>
-          <div class="tech-meta"><span class="stars">★★★★☆</span><span style="font-size:12px;color:var(--wh3)">4.7 (203)</span><span class="dot-open"></span><span style="font-size:12px;color:var(--wh3)">Open</span></div>
+          <div class="tech-meta"><span class="stars">★★★★☆</span><span style="font-size:13px;color:var(--wh3)">4.7 (203)</span><span class="dot-open"></span><span style="font-size:13px;color:var(--green);">Open</span></div>
         </div>
-        <div style="text-align:right;"><div class="tech-rate">₱350</div><div class="fixer-score" style="margin-top:4px;">⚡89</div></div>
-      </div>
-      <div class="tech-card" onclick="go('s-tech-profile')">
-        <div class="avatar">LC</div>
-        <div class="tech-info">
-          <div class="tech-name">Lola Caring Appliance</div>
-          <div class="tech-spec">🧊 Ref & Washer Repair</div>
-          <div class="tech-meta"><span class="stars">★★★★★</span><span style="font-size:12px;color:var(--wh3)">5.0 (41)</span><span class="dot-busy"></span><span style="font-size:12px;color:var(--wh3)">Busy</span></div>
+        <div style="text-align:right;">
+          <div class="tech-rate">₱350/hr</div><div style="font-size:11px;color:var(--wh3);">drop-off</div>
+          <span class="score-pill" style="display:inline-block;margin-top:6px;">⚡ 89/100</span>
         </div>
-        <div style="text-align:right;"><div class="tech-rate">₱400</div><div class="fixer-score" style="margin-top:4px;">⚡97</div></div>
+        <div class="tech-actions">
+          <button class="btn-ghost" style="padding:9px 16px;font-size:13px;" onclick="event.stopPropagation();nav('messages')">💬 Chat</button>
+          <button class="btn-or" style="padding:9px 16px;font-size:13px;" onclick="event.stopPropagation();nav('booking')">Book Now</button>
+        </div>
       </div>
     </div>
-    <div class="bottom-nav">
-      <div class="nav-item" onclick="go('s-home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
-      <div class="nav-item active" onclick="go('s-search')"><div class="nav-icon">🔍</div><div class="nav-label">Search</div></div>
-      <div class="nav-item" onclick="go('s-bookings')"><div class="nav-icon">📋</div><div class="nav-label">Bookings</div></div>
-      <div class="nav-item" onclick="go('s-messages')"><div class="nav-icon">💬</div><div class="nav-label">Messages</div></div>
-      <div class="nav-item" onclick="go('s-profile')"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
-    </div>
-  </div>
 
-  <!-- ═══════════════ TECHNICIAN PROFILE ═══════════════ -->
-  <div class="screen" id="s-tech-profile">
-    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><span>📶</span><span>🔋</span></div></div>
-    <div class="top-bar">
-      <button class="back-btn" onclick="goBack('s-home')">←</button>
-      <span class="top-title">Technician Profile</span>
-      <span onclick="showToast('❤️ Saved to favorites!')" style="font-size:22px; cursor:pointer;">🤍</span>
-    </div>
-    <div style="overflow-y:auto; flex:1;">
-      <div class="profile-hero">
-        <div class="avatar lg" style="margin:0 auto 12px;">MR</div>
-        <h2 style="font-family:'Syne',sans-serif; font-size:20px; font-weight:800;">Mang Romy Dela Cruz</h2>
-        <p style="font-size:13px; color:var(--wh3); margin-top:4px;">📱 Phone & Laptop Repair Specialist</p>
-        <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:8px;">
-          <span class="stars">★★★★★</span>
-          <span style="font-size:13px; font-weight:600;">4.9</span>
-          <span style="font-size:13px; color:var(--wh3);">(127 reviews)</span>
-          <span class="dot-open"></span>
-          <span style="font-size:13px; color:#22c55e; font-weight:600;">Open</span>
+    <!-- ─── SEARCH ─── -->
+    <div class="view" id="v-search">
+      <h1 class="page-title">Find Technicians</h1>
+      <p class="page-sub">Browse 24 verified technicians near San Pablo City</p>
+      <div style="display:flex; gap:12px; margin-bottom:20px; align-items:center;">
+        <div class="topbar-search" style="flex:1; max-width:100%;">
+          <span style="font-size:16px;">🔍</span>
+          <input placeholder="e.g. phone screen repair, aircon cleaning...">
         </div>
-        <div class="profile-badges">
-          <span class="badge-pill">✅ Verified</span>
-          <span class="badge-pill">👑 Master Fixer</span>
-          <span class="badge-pill">⚡ Speed Demon</span>
-          <span class="badge-pill">🛡️ Zero Complaints</span>
-        </div>
+        <button class="btn-ghost" style="white-space:nowrap;" onclick="showToast('⚙️ Filters opened')">⚙️ Filters</button>
+        <button class="btn-ghost" style="white-space:nowrap;" onclick="showToast('🗺️ Map view opened')">🗺️ Map View</button>
       </div>
-      <div class="content" style="padding-top:16px;">
-        <!-- STATS ROW -->
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px;">
-          <div style="background:var(--bk3); border-radius:12px; padding:14px; text-align:center;">
-            <div style="font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:var(--or);">1,400</div>
-            <div style="font-size:10px; color:var(--wh3);">Days Active</div>
-          </div>
-          <div style="background:var(--bk3); border-radius:12px; padding:14px; text-align:center;">
-            <div style="font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:var(--or);">512</div>
-            <div style="font-size:10px; color:var(--wh3);">Jobs Done</div>
-          </div>
-          <div style="background:var(--bk3); border-radius:12px; padding:14px; text-align:center; display:flex; flex-direction:column; align-items:center;">
-            <div class="score-ring"><div class="score-num">94</div><div class="score-lbl">FIXER</div></div>
-            <div style="font-size:10px; color:var(--wh3); margin-top:4px;">FixerScore</div>
-          </div>
-        </div>
-        <!-- SERVICES -->
-        <h3 style="font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-bottom:12px;">Services & Pricing</h3>
-        <div class="card" style="margin-bottom:12px; cursor:default;">
-          <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--br);">
-            <span style="font-size:14px;">Screen Replacement</span><span style="font-weight:700; color:var(--or);">₱350–500</span>
-          </div>
-          <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--br);">
-            <span style="font-size:14px;">Battery Replacement</span><span style="font-weight:700; color:var(--or);">₱200–350</span>
-          </div>
-          <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--br);">
-            <span style="font-size:14px;">Data Recovery</span><span style="font-weight:700; color:var(--or);">₱500–800</span>
-          </div>
-          <div style="display:flex; justify-content:space-between; padding:8px 0;">
-            <span style="font-size:14px;">General Laptop Repair</span><span style="font-weight:700; color:var(--or);">₱250/hr</span>
-          </div>
-        </div>
-        <!-- PORTFOLIO -->
-        <h3 style="font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-bottom:12px;">Portfolio</h3>
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:20px;">
-          <div onclick="showToast('📸 Before/After photo opened')" style="background:var(--bk3); border-radius:10px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:30px; cursor:pointer; border:1px solid var(--br);">📱</div>
-          <div onclick="showToast('📸 Before/After photo opened')" style="background:var(--bk3); border-radius:10px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:30px; cursor:pointer; border:1px solid var(--br);">💻</div>
-          <div onclick="showToast('📸 Before/After photo opened')" style="background:var(--bk3); border-radius:10px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:30px; cursor:pointer; border:1px solid var(--br);">🖥️</div>
-        </div>
-        <!-- REVIEWS -->
-        <h3 style="font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-bottom:12px;">Recent Reviews</h3>
-        <div class="review-card">
-          <div style="display:flex; gap:10px; align-items:center; margin-bottom:8px;">
-            <div class="avatar" style="width:32px;height:32px;font-size:11px;">JP</div>
-            <div><div style="font-size:13px; font-weight:700;">Juan Pablo</div><div class="stars" style="font-size:11px;">★★★★★</div></div>
-            <span style="font-size:11px; color:var(--wh3); margin-left:auto;">2 days ago</span>
-          </div>
-          <p style="font-size:13px; color:var(--wh3);">Super bilis! Fixed my iPhone screen in 30 mins. Solid siya, very professional. Highly recommend!</p>
-        </div>
-        <div class="review-card">
-          <div style="display:flex; gap:10px; align-items:center; margin-bottom:8px;">
-            <div class="avatar" style="width:32px;height:32px;font-size:11px;">ML</div>
-            <div><div style="font-size:13px; font-weight:700;">Maria Liza</div><div class="stars" style="font-size:11px;">★★★★★</div></div>
-            <span style="font-size:11px; color:var(--wh3); margin-left:auto;">1 week ago</span>
-          </div>
-          <p style="font-size:13px; color:var(--wh3);">Ang galing! Nairecover pa yung files ko na akala ko wala na. Sulit na sulit ang bayad!</p>
-        </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:4px; padding-bottom:20px;">
-          <button class="btn-ghost" onclick="go('s-messages')">💬 Message</button>
-          <button class="btn-or" onclick="go('s-booking')">Book Now</button>
-        </div>
+      <div class="chip-row">
+        <div class="chip active" onclick="setChip(this)">All</div>
+        <div class="chip" onclick="setChip(this)">📱 Phones</div>
+        <div class="chip" onclick="setChip(this)">💻 Laptops</div>
+        <div class="chip" onclick="setChip(this)">❄️ Aircon</div>
+        <div class="chip" onclick="setChip(this)">📺 TV</div>
+        <div class="chip" onclick="setChip(this)">🧊 Ref</div>
+        <div class="chip" onclick="setChip(this)">👕 Washer</div>
+        <div class="chip" onclick="setChip(this)">🖨️ Printer</div>
+      </div>
+      <p style="font-size:13px; color:var(--wh3); margin-bottom:16px;">24 technicians found</p>
+      <div class="tech-row" onclick="nav('tech-profile')">
+        <div class="avatar md">MR</div>
+        <div class="tech-info"><div class="tech-name">Mang Romy Dela Cruz</div><div class="tech-spec">📱 Phone & Laptop Repair</div><div class="tech-meta"><span class="stars">★★★★★</span><span style="font-size:13px;color:var(--wh3)">4.9 (127)</span><span class="dot-open"></span><span style="font-size:13px;color:var(--green)">Open</span></div></div>
+        <div style="text-align:right;"><div class="tech-rate">₱250/hr</div><span class="score-pill" style="display:inline-block;margin-top:6px;">⚡ 94</span></div>
+        <div class="tech-actions"><button class="btn-ghost" style="padding:9px 16px;font-size:13px;" onclick="event.stopPropagation();nav('messages')">💬 Chat</button><button class="btn-or" style="padding:9px 16px;font-size:13px;" onclick="event.stopPropagation();nav('booking')">Book Now</button></div>
+      </div>
+      <div class="tech-row" onclick="nav('tech-profile')">
+        <div class="avatar md">AJ</div>
+        <div class="tech-info"><div class="tech-name">Ate Joy Santos</div><div class="tech-spec">❄️ Aircon Specialist</div><div class="tech-meta"><span class="stars">★★★★★</span><span style="font-size:13px;color:var(--wh3)">4.8 (89)</span><span class="dot-open"></span><span style="font-size:13px;color:var(--green)">Open</span></div></div>
+        <div style="text-align:right;"><div class="tech-rate">₱500</div><span class="score-pill" style="display:inline-block;margin-top:6px;">⚡ 91</span></div>
+        <div class="tech-actions"><button class="btn-ghost" style="padding:9px 16px;font-size:13px;" onclick="event.stopPropagation();nav('messages')">💬 Chat</button><button class="btn-or" style="padding:9px 16px;font-size:13px;" onclick="event.stopPropagation();nav('booking')">Book Now</button></div>
+      </div>
+      <div class="tech-row" onclick="nav('tech-profile')">
+        <div class="avatar md">BD</div>
+        <div class="tech-info"><div class="tech-name">Boss Danny Repair</div><div class="tech-spec">📺 TV & Electronics</div><div class="tech-meta"><span class="stars">★★★★☆</span><span style="font-size:13px;color:var(--wh3)">4.7 (203)</span><span class="dot-open"></span><span style="font-size:13px;color:var(--green)">Open</span></div></div>
+        <div style="text-align:right;"><div class="tech-rate">₱350/hr</div><span class="score-pill" style="display:inline-block;margin-top:6px;">⚡ 89</span></div>
+        <div class="tech-actions"><button class="btn-ghost" style="padding:9px 16px;font-size:13px;" onclick="event.stopPropagation();nav('messages')">💬 Chat</button><button class="btn-or" style="padding:9px 16px;font-size:13px;" onclick="event.stopPropagation();nav('booking')">Book Now</button></div>
+      </div>
+      <div class="tech-row" onclick="nav('tech-profile')">
+        <div class="avatar md">LC</div>
+        <div class="tech-info"><div class="tech-name">Lola Caring Appliance</div><div class="tech-spec">🧊 Ref & Washer Repair</div><div class="tech-meta"><span class="stars">★★★★★</span><span style="font-size:13px;color:var(--wh3)">5.0 (41)</span><span class="dot-busy"></span><span style="font-size:13px;color:var(--amber)">Busy</span></div></div>
+        <div style="text-align:right;"><div class="tech-rate">₱400/hr</div><span class="score-pill" style="display:inline-block;margin-top:6px;">⚡ 97</span></div>
+        <div class="tech-actions"><button class="btn-ghost" style="padding:9px 16px;font-size:13px;" onclick="event.stopPropagation();nav('messages')">💬 Chat</button><button class="btn-or" style="padding:9px 16px;font-size:13px; opacity:.5;" disabled>Busy</button></div>
       </div>
     </div>
-  </div>
 
-  <!-- ═══════════════ BOOKING ═══════════════ -->
-  <div class="screen" id="s-booking">
-    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><span>📶</span><span>🔋</span></div></div>
-    <div class="top-bar">
-      <button class="back-btn" onclick="goBack('s-tech-profile')">←</button>
-      <span class="top-title">Book a Repair</span>
-      <div style="width:36px"></div>
-    </div>
-    <div style="overflow-y:auto; flex:1; padding:0 20px 24px;">
-      <!-- TECH MINI CARD -->
-      <div style="display:flex; gap:12px; align-items:center; background:var(--bk3); border-radius:14px; padding:14px; margin-bottom:20px; border:1px solid var(--br);">
-        <div class="avatar">MR</div>
-        <div><div style="font-weight:700;">Mang Romy Dela Cruz</div><div style="font-size:12px; color:var(--wh3);">📱 Phone & Laptop Repair</div></div>
-        <div class="fixer-score" style="margin-left:auto;">⚡94/100</div>
+    <!-- ─── TECH PROFILE ─── -->
+    <div class="view" id="v-tech-profile">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
+        <button class="btn-ghost" style="padding:9px 16px; font-size:13px;" onclick="nav('search')">← Back</button>
+        <h1 class="page-title" style="margin:0;">Technician Profile</h1>
+        <button onclick="showToast('❤️ Saved to favorites!')" class="btn-ghost" style="padding:9px 16px; font-size:13px; margin-left:auto;">🤍 Save</button>
       </div>
-      <!-- SERVICE TYPE -->
-      <h3 style="font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-bottom:12px;">Service Type</h3>
-      <div class="service-type-row">
-        <div class="svc-type selected" id="svc-home" onclick="selectSvc('home')">
-          <div class="svc-icon">🏠</div><h4>Home Service</h4><p>Technician comes to you</p>
-        </div>
-        <div class="svc-type" id="svc-drop" onclick="selectSvc('drop')">
-          <div class="svc-icon">📦</div><h4>Drop-Off</h4><p>Bring your device</p>
-        </div>
-      </div>
-      <!-- DATE -->
-      <h3 style="font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-bottom:12px;">Select Date</h3>
-      <div class="chip-row" style="margin-bottom:16px;">
-        <div class="chip">Today</div>
-        <div class="chip active">Tomorrow</div>
-        <div class="chip">Wed, Mar 25</div>
-        <div class="chip">Thu, Mar 26</div>
-        <div class="chip">Fri, Mar 27</div>
-      </div>
-      <!-- TIME -->
-      <h3 style="font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-bottom:12px;">Select Time</h3>
-      <div class="time-grid">
-        <div class="time-slot">8:00 AM</div>
-        <div class="time-slot selected">9:00 AM</div>
-        <div class="time-slot">10:00 AM</div>
-        <div class="time-slot">11:00 AM</div>
-        <div class="time-slot">1:00 PM</div>
-        <div class="time-slot">2:00 PM</div>
-      </div>
-      <!-- DESCRIPTION -->
-      <h3 style="font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-bottom:12px;">Describe the Problem</h3>
-      <textarea class="inp" rows="3" placeholder="e.g. My iPhone 13 screen is cracked and the touch isn't working on the left side..." style="resize:none; margin-bottom:16px;"></textarea>
-      <!-- PHOTO ATTACH -->
-      <div onclick="showToast('📸 Camera opened')" style="background:var(--bk3); border:1px dashed var(--br); border-radius:12px; padding:16px; text-align:center; cursor:pointer; margin-bottom:20px;">
-        <div style="font-size:24px; margin-bottom:4px;">📷</div>
-        <p style="font-size:13px; color:var(--wh3);">Attach a photo of the issue (optional)</p>
-      </div>
-      <!-- SUMMARY -->
-      <div style="background:var(--bk3); border:1px solid var(--br-or); border-radius:14px; padding:16px; margin-bottom:20px;">
-        <h4 style="font-size:14px; font-weight:700; margin-bottom:12px;">Booking Summary</h4>
-        <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="font-size:13px; color:var(--wh3);">Service Type</span><span style="font-size:13px; font-weight:600;">Home Service</span></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="font-size:13px; color:var(--wh3);">Date & Time</span><span style="font-size:13px; font-weight:600;">Tue, Mar 25 • 9:00 AM</span></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="font-size:13px; color:var(--wh3);">Rate</span><span style="font-size:13px; font-weight:600;">₱250/hr</span></div>
-        <div class="divider"></div>
-        <div style="display:flex; justify-content:space-between;"><span style="font-size:13px; color:var(--wh3);">Platform Fee</span><span style="font-size:13px; font-weight:600; color:var(--or);">₱15</span></div>
-      </div>
-      <button class="btn-or" onclick="go('s-payment')">Proceed to Payment →</button>
-    </div>
-  </div>
-
-  <!-- ═══════════════ PAYMENT ═══════════════ -->
-  <div class="screen" id="s-payment">
-    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><span>📶</span><span>🔋</span></div></div>
-    <div class="top-bar">
-      <button class="back-btn" onclick="goBack('s-booking')">←</button>
-      <span class="top-title">Payment</span>
-      <div style="width:36px"></div>
-    </div>
-    <div style="overflow-y:auto; flex:1; padding:0 20px 24px;">
-      <h3 style="font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-bottom:16px;">Select Payment Method</h3>
-      <div class="pay-method selected" id="pay-gcash" onclick="selectPay('gcash')">
-        <div class="pay-logo">💙</div>
-        <div><h4>GCash</h4><p>Pay with your GCash wallet</p></div>
-        <div class="pay-radio"></div>
-      </div>
-      <div class="pay-method" id="pay-maya" onclick="selectPay('maya')">
-        <div class="pay-logo">💚</div>
-        <div><h4>Maya</h4><p>Pay with your Maya wallet</p></div>
-        <div class="pay-radio"></div>
-      </div>
-      <div class="divider" style="margin:20px 0;"></div>
-      <h3 style="font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-bottom:16px;">Order Summary</h3>
-      <div style="background:var(--bk3); border:1px solid var(--br); border-radius:14px; padding:16px;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span style="font-size:13px; color:var(--wh3);">Home Service</span><span style="font-size:13px;">₱250/hr (est.)</span></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span style="font-size:13px; color:var(--wh3);">Platform Fee</span><span style="font-size:13px;">₱15</span></div>
-        <div class="divider"></div>
-        <div style="display:flex; justify-content:space-between;">
-          <span style="font-size:14px; font-weight:700;">Total (est.)</span>
-          <span style="font-size:18px; font-weight:800; color:var(--or); font-family:'Syne',sans-serif;">₱265</span>
-        </div>
-        <p style="font-size:11px; color:var(--wh3); margin-top:8px;">Final amount depends on actual repair time. You'll confirm before final charge.</p>
-      </div>
-      <div style="margin:20px 0;">
-        <div class="input-wrap" style="margin:0;"><label>Promo Code</label>
-          <div style="display:flex; gap:8px;">
-            <input class="inp" placeholder="Enter promo code" style="flex:1;">
-            <button onclick="showToast('✅ Code FIXHUB25 applied!')" style="background:var(--or); border:none; border-radius:12px; padding:0 16px; color:white; font-weight:700; cursor:pointer; font-family:'Syne',sans-serif; font-size:14px; flex-shrink:0;">Apply</button>
-          </div>
-        </div>
-      </div>
-      <button class="btn-or" onclick="go('s-confirm')">Confirm & Pay ₱265</button>
-    </div>
-  </div>
-
-  <!-- ═══════════════ BOOKING CONFIRMATION ═══════════════ -->
-  <div class="screen" id="s-confirm">
-    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><span>📶</span><span>🔋</span></div></div>
-    <div style="overflow-y:auto; flex:1;">
-      <div class="confirm-hero">
-        <div class="confirm-check">✅</div>
-        <h2 style="font-family:'Syne',sans-serif; font-size:22px; font-weight:800;">Booking Confirmed!</h2>
-        <p style="color:var(--wh3); font-size:14px; margin-top:8px;">Mang Romy has been notified.<br>He'll arrive at 9:00 AM tomorrow.</p>
-        <div class="tag" style="margin-top:12px;">Booking #FH-2025-0847</div>
-      </div>
-      <div class="content">
-        <!-- TRACKER -->
-        <div style="background:var(--bk2); border:1px solid var(--br); border-radius:16px; padding:20px; margin-bottom:20px;">
-          <h3 style="font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-bottom:20px;">Live Status</h3>
-          <div class="tracker">
-            <div class="tracker-step">
-              <div class="tracker-dot-col"><div class="tracker-dot done"></div><div class="tracker-line done"></div></div>
-              <div class="tracker-info"><div class="tracker-title">Confirmed ✓</div><div class="tracker-sub">Booking received & accepted</div></div>
+      <div class="profile-layout">
+        <div class="profile-sidebar">
+          <div class="profile-card">
+            <div class="avatar xl" style="margin:0 auto;">MR</div>
+            <div class="profile-name">Mang Romy Dela Cruz</div>
+            <div class="profile-spec">📱 Phone & Laptop Repair Specialist</div>
+            <div class="profile-rating">
+              <span class="stars">★★★★★</span>
+              <span style="font-weight:700;">4.9</span>
+              <span style="color:var(--wh3); font-size:13px;">(127)</span>
+              <span class="dot-open"></span>
+              <span style="color:var(--green); font-weight:600; font-size:13px;">Open</span>
             </div>
-            <div class="tracker-step">
-              <div class="tracker-dot-col"><div class="tracker-dot active"></div><div class="tracker-line"></div></div>
-              <div class="tracker-info"><div class="tracker-title" style="color:var(--or);">On the Way 🛵</div><div class="tracker-sub">Technician is heading to you</div></div>
+            <div class="profile-badges">
+              <span class="badge-pill">✅ Verified</span>
+              <span class="badge-pill">👑 Master Fixer</span>
+              <span class="badge-pill">⚡ Speed Demon</span>
+              <span class="badge-pill">🛡️ Zero Complaints</span>
             </div>
-            <div class="tracker-step">
-              <div class="tracker-dot-col"><div class="tracker-dot"></div><div class="tracker-line"></div></div>
-              <div class="tracker-info"><div class="tracker-title" style="color:var(--wh3);">In Progress</div><div class="tracker-sub">Repair in progress</div></div>
+            <div class="profile-stat-row">
+              <div class="p-stat"><div class="p-stat-num">1,400</div><div class="p-stat-lbl">Days Active</div></div>
+              <div class="p-stat"><div class="p-stat-num">512</div><div class="p-stat-lbl">Jobs Done</div></div>
+              <div class="p-stat"><div class="score-ring"><div class="score-num">94</div><div class="score-lbl">FIXER</div></div><div class="p-stat-lbl" style="margin-top:6px;">FixerScore</div></div>
             </div>
-            <div class="tracker-step">
-              <div class="tracker-dot-col"><div class="tracker-dot"></div></div>
-              <div class="tracker-info"><div class="tracker-title" style="color:var(--wh3);">Done</div><div class="tracker-sub">Repair completed</div></div>
+            <div class="profile-actions">
+              <button class="btn-ghost" onclick="nav('messages')">💬 Message</button>
+              <button class="btn-or" onclick="nav('booking')">Book Now</button>
             </div>
           </div>
         </div>
-        <!-- TECH CARD -->
-        <div style="display:flex; gap:12px; align-items:center; background:var(--bk3); border-radius:14px; padding:14px; margin-bottom:16px; border:1px solid var(--br);">
-          <div class="avatar">MR</div>
-          <div style="flex:1;"><div style="font-weight:700;">Mang Romy Dela Cruz</div><div style="font-size:12px; color:var(--wh3);">ETA: ~25 minutes</div></div>
-          <button onclick="go('s-messages')" style="background:var(--or-dim); border:1px solid var(--br-or); border-radius:10px; padding:8px 14px; color:var(--or); font-weight:700; cursor:pointer; font-size:13px;">Chat</button>
+        <div>
+          <h3 class="section-label">Services & Pricing</h3>
+          <div class="card" style="margin-bottom:20px; cursor:default;">
+            <div class="service-row"><span>Screen Replacement</span><span class="service-price">₱350–500</span></div>
+            <div class="service-row"><span>Battery Replacement</span><span class="service-price">₱200–350</span></div>
+            <div class="service-row"><span>Data Recovery</span><span class="service-price">₱500–800</span></div>
+            <div class="service-row"><span>General Laptop Repair</span><span class="service-price">₱250/hr</span></div>
+          </div>
+          <h3 class="section-label">Portfolio</h3>
+          <div class="portfolio-grid" style="margin-bottom:24px;">
+            <div class="portfolio-item" onclick="showToast('📸 Before/After photo opened')">📱</div>
+            <div class="portfolio-item" onclick="showToast('📸 Before/After photo opened')">💻</div>
+            <div class="portfolio-item" onclick="showToast('📸 Before/After photo opened')">🖥️</div>
+            <div class="portfolio-item" onclick="showToast('📸 Before/After photo opened')">🔌</div>
+          </div>
+          <h3 class="section-label">Recent Reviews</h3>
+          <div class="review-card">
+            <div class="review-header">
+              <div class="avatar" style="width:32px;height:32px;font-size:10px;">JP</div>
+              <div><div class="reviewer-name">Juan Pablo</div><div class="stars" style="font-size:11px;">★★★★★</div></div>
+              <span class="review-date">2 days ago</span>
+            </div>
+            <p class="review-text">Super bilis! Fixed my iPhone screen in 30 mins. Solid siya, very professional. Highly recommend!</p>
+          </div>
+          <div class="review-card">
+            <div class="review-header">
+              <div class="avatar" style="width:32px;height:32px;font-size:10px;">ML</div>
+              <div><div class="reviewer-name">Maria Liza</div><div class="stars" style="font-size:11px;">★★★★★</div></div>
+              <span class="review-date">1 week ago</span>
+            </div>
+            <p class="review-text">Ang galing! Nairecover pa yung files ko na akala ko wala na. Sulit na sulit ang bayad!</p>
+          </div>
+          <div class="review-card">
+            <div class="review-header">
+              <div class="avatar" style="width:32px;height:32px;font-size:10px;">CR</div>
+              <div><div class="reviewer-name">Carlo Reyes</div><div class="stars" style="font-size:11px;">★★★★☆</div></div>
+              <span class="review-date">2 weeks ago</span>
+            </div>
+            <p class="review-text">Magaling at maayos na tao. On time pa siya dumating sa bahay namin. Babalik ulit ako kapag may sira ulit!</p>
+          </div>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
-          <button class="btn-ghost" onclick="showToast('📄 Digital receipt sent to email!')">Get Receipt</button>
-          <button class="btn-or" onclick="go('s-review')">Leave Review</button>
-        </div>
-        <button class="btn-ghost" onclick="go('s-home')">Back to Home</button>
       </div>
     </div>
-  </div>
 
-  <!-- ═══════════════ REVIEW ═══════════════ -->
-  <div class="screen" id="s-review">
-    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><span>📶</span><span>🔋</span></div></div>
-    <div class="top-bar">
-      <button class="back-btn" onclick="goBack('s-confirm')">←</button>
-      <span class="top-title">Leave a Review</span>
-      <div style="width:36px"></div>
-    </div>
-    <div style="padding:0 20px 24px; overflow-y:auto; flex:1;">
-      <div style="text-align:center; padding:20px 0 10px;">
-        <div class="avatar lg" style="margin:0 auto 12px;">MR</div>
-        <h3 style="font-family:'Syne',sans-serif; font-size:18px; font-weight:800;">How was Mang Romy?</h3>
-        <p style="color:var(--wh3); font-size:13px; margin-top:6px;">Your review helps other customers find<br>the best technicians</p>
+    <!-- ─── BOOKING ─── -->
+    <div class="view" id="v-booking">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
+        <button class="btn-ghost" style="padding:9px 16px; font-size:13px;" onclick="nav('tech-profile')">← Back</button>
+        <h1 class="page-title" style="margin:0;">Book a Repair</h1>
       </div>
-      <div class="star-row" id="star-row">
-        <span class="star-btn lit" onclick="setStars(1)">★</span>
-        <span class="star-btn lit" onclick="setStars(2)">★</span>
-        <span class="star-btn lit" onclick="setStars(3)">★</span>
-        <span class="star-btn lit" onclick="setStars(4)">★</span>
-        <span class="star-btn" onclick="setStars(5)">★</span>
-      </div>
-      <p id="star-label" style="text-align:center; font-size:14px; color:var(--wh3); margin-bottom:20px;">Very Good</p>
-      <!-- QUICK TAGS -->
-      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;">
-        <div class="chip active">⚡ Fast Service</div>
-        <div class="chip active">✅ Professional</div>
-        <div class="chip">💰 Fair Price</div>
-        <div class="chip">🔧 Quality Work</div>
-        <div class="chip">🗣️ Great Communication</div>
-      </div>
-      <div class="input-wrap">
-        <label>Write your review</label>
-        <textarea class="inp" rows="4" placeholder="Tell others about your experience with Mang Romy..." style="resize:none;"></textarea>
-      </div>
-      <div class="input-wrap">
-        <label>Add a photo (optional)</label>
-        <div onclick="showToast('📸 Camera opened')" style="background:var(--bk3); border:1px dashed var(--br); border-radius:12px; padding:16px; text-align:center; cursor:pointer;">
-          <div style="font-size:24px;">📷</div>
-          <p style="font-size:13px; color:var(--wh3); margin-top:4px;">Tap to add photo</p>
+      <div class="booking-layout">
+        <div>
+          <div style="display:flex; align-items:center; gap:14px; background:var(--bk2); border:1px solid var(--br); border-radius:var(--radius); padding:18px; margin-bottom:24px;">
+            <div class="avatar md">MR</div>
+            <div><div style="font-weight:700; font-size:15px;">Mang Romy Dela Cruz</div><div style="font-size:13px; color:var(--wh3);">📱 Phone & Laptop Repair</div></div>
+            <span class="score-pill" style="margin-left:auto;">⚡ 94/100</span>
+          </div>
+          <h3 class="section-label">Service Type</h3>
+          <div class="svc-type-grid">
+            <div class="svc-type selected" id="svc-home" onclick="selectSvc('home')"><div class="svc-icon">🏠</div><div class="svc-title">Home Service</div><div class="svc-desc">Technician comes to you</div></div>
+            <div class="svc-type" id="svc-drop" onclick="selectSvc('drop')"><div class="svc-icon">📦</div><div class="svc-title">Drop-Off</div><div class="svc-desc">Bring your device</div></div>
+          </div>
+          <h3 class="section-label">Select Date</h3>
+          <div class="chip-row date-chips" style="margin-bottom:24px;">
+            <div class="chip" onclick="setChip(this)">Today</div>
+            <div class="chip active" onclick="setChip(this)">Tomorrow</div>
+            <div class="chip" onclick="setChip(this)">Wed, Mar 25</div>
+            <div class="chip" onclick="setChip(this)">Thu, Mar 26</div>
+            <div class="chip" onclick="setChip(this)">Fri, Mar 27</div>
+          </div>
+          <h3 class="section-label">Select Time</h3>
+          <div class="time-grid">
+            <div class="time-slot" onclick="setTimeSlot(this)">8:00 AM</div>
+            <div class="time-slot selected" onclick="setTimeSlot(this)">9:00 AM</div>
+            <div class="time-slot" onclick="setTimeSlot(this)">10:00 AM</div>
+            <div class="time-slot" onclick="setTimeSlot(this)">11:00 AM</div>
+            <div class="time-slot" onclick="setTimeSlot(this)">1:00 PM</div>
+            <div class="time-slot" onclick="setTimeSlot(this)">2:00 PM</div>
+            <div class="time-slot" onclick="setTimeSlot(this)">3:00 PM</div>
+            <div class="time-slot" onclick="setTimeSlot(this)">4:00 PM</div>
+          </div>
+          <h3 class="section-label">Describe the Problem</h3>
+          <div class="input-wrap"><textarea class="inp" rows="4" placeholder="e.g. My iPhone 13 screen is cracked and the touch isn't working on the left side..." style="resize:none; margin-bottom:16px;"></textarea></div>
+          <div onclick="showToast('📸 File picker opened')" style="background:var(--bk3); border:1px dashed var(--br); border-radius:10px; padding:20px; text-align:center; cursor:pointer; margin-bottom:24px;" onmouseover="this.style.borderColor='var(--br-or)'" onmouseout="this.style.borderColor='var(--br)'">
+            <div style="font-size:24px; margin-bottom:6px;">📷</div>
+            <p style="font-size:13px; color:var(--wh3);">Click to attach a photo of the issue (optional)</p>
+          </div>
+        </div>
+        <div class="booking-summary">
+          <h3 style="font-family:'Syne',sans-serif; font-size:17px; font-weight:700; margin-bottom:20px;">Booking Summary</h3>
+          <div class="summary-line"><span class="lbl">Technician</span><span>Mang Romy</span></div>
+          <div class="summary-line"><span class="lbl">Service Type</span><span>Home Service</span></div>
+          <div class="summary-line"><span class="lbl">Date & Time</span><span>Tue, Mar 25 • 9:00 AM</span></div>
+          <div class="summary-line"><span class="lbl">Rate</span><span>₱250/hr</span></div>
+          <div class="divider"></div>
+          <div class="summary-line"><span class="lbl">Platform Fee</span><span style="color:var(--or);">₱15</span></div>
+          <div class="divider"></div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <span style="font-weight:700;">Est. Total</span>
+            <span class="summary-total">₱265</span>
+          </div>
+          <button class="btn-or" style="width:100%;" onclick="nav('payment')">Proceed to Payment →</button>
+          <p style="font-size:11px; color:var(--wh3); text-align:center; margin-top:10px;">Final amount confirmed after repair</p>
         </div>
       </div>
-      <button class="btn-or" onclick="go('s-home'); showToast('🎉 Review submitted! Thank you!')">Submit Review</button>
     </div>
-  </div>
 
-  <!-- ═══════════════ MY BOOKINGS ═══════════════ -->
-  <div class="screen" id="s-bookings">
-    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><span>📶</span><span>🔋</span></div></div>
-    <div style="padding:14px 20px 0;"><h2 style="font-family:'Syne',sans-serif; font-size:20px; font-weight:800;">My Bookings</h2></div>
-    <div class="chip-row" style="padding:14px 20px 0;">
-      <div class="chip active">All</div>
-      <div class="chip">Active</div>
-      <div class="chip">Completed</div>
-      <div class="chip">Cancelled</div>
+    <!-- ─── PAYMENT ─── -->
+    <div class="view" id="v-payment">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
+        <button class="btn-ghost" style="padding:9px 16px; font-size:13px;" onclick="nav('booking')">← Back</button>
+        <h1 class="page-title" style="margin:0;">Payment</h1>
+      </div>
+      <div class="payment-layout">
+        <div>
+          <h3 class="section-label">Select Payment Method</h3>
+          <div class="pay-method selected" id="pay-gcash" onclick="selectPay('gcash')">
+            <div class="pay-logo">💙</div>
+            <div><h4>GCash</h4><p>Pay with your GCash wallet</p></div>
+            <div class="pay-radio"></div>
+          </div>
+          <div class="pay-method" id="pay-maya" onclick="selectPay('maya')">
+            <div class="pay-logo">💚</div>
+            <div><h4>Maya</h4><p>Pay with your Maya wallet</p></div>
+            <div class="pay-radio"></div>
+          </div>
+          <div class="divider"></div>
+          <h3 class="section-label">Promo Code</h3>
+          <div class="promo-row">
+            <input class="inp" placeholder="Enter promo code (e.g. FIXHUB25)">
+            <button class="apply-btn" onclick="showToast('✅ Code FIXHUB25 applied! ₱15 off!')">Apply</button>
+          </div>
+        </div>
+        <div style="background:var(--bk2); border:1px solid var(--br); border-radius:var(--radius-lg); padding:24px; position:sticky; top:0;">
+          <h3 style="font-family:'Syne',sans-serif; font-size:17px; font-weight:700; margin-bottom:20px;">Order Summary</h3>
+          <div class="summary-line"><span class="lbl">Home Service</span><span>₱250/hr (est.)</span></div>
+          <div class="summary-line"><span class="lbl">Platform Fee</span><span>₱15</span></div>
+          <div class="divider"></div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-weight:700;">Total (est.)</span>
+            <span style="font-family:'Syne',sans-serif; font-size:24px; font-weight:800; color:var(--or);">₱265</span>
+          </div>
+          <p style="font-size:11px; color:var(--wh3); margin-bottom:20px;">Final amount depends on actual repair time. You'll confirm before final charge.</p>
+          <button class="btn-or" style="width:100%;" onclick="nav('confirm')">Confirm & Pay ₱265 →</button>
+        </div>
+      </div>
     </div>
-    <div class="content" style="padding-top:12px;">
-      <!-- ACTIVE -->
-      <div class="card" style="margin-bottom:12px;" onclick="go('s-confirm')">
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-          <span class="tag">🟢 Active</span>
-          <span style="font-size:12px; color:var(--wh3);">Mar 25, 2025</span>
+
+    <!-- ─── CONFIRM ─── -->
+    <div class="view" id="v-confirm">
+      <div class="confirm-layout">
+        <div>
+          <div class="confirm-check">✅</div>
+          <h1 class="page-title">Booking Confirmed!</h1>
+          <p style="color:var(--wh3); font-size:14px; margin-bottom:24px;">Mang Romy has been notified. He'll arrive at 9:00 AM tomorrow.</p>
+          <div class="tag" style="margin-bottom:28px;">Booking #FH-2025-0847</div>
+          <div style="background:var(--bk2); border:1px solid var(--br); border-radius:var(--radius-lg); padding:24px; margin-bottom:20px;">
+            <h3 class="section-label">Live Status</h3>
+            <div class="tracker">
+              <div class="tracker-step">
+                <div class="tracker-dot-col"><div class="tracker-dot done"></div><div class="tracker-line done"></div></div>
+                <div class="tracker-info"><div class="tracker-title">Confirmed ✓</div><div class="tracker-sub">Booking received & accepted</div></div>
+              </div>
+              <div class="tracker-step">
+                <div class="tracker-dot-col"><div class="tracker-dot active"></div><div class="tracker-line"></div></div>
+                <div class="tracker-info"><div class="tracker-title" style="color:var(--or);">On the Way 🛵</div><div class="tracker-sub">Technician is heading to you</div></div>
+              </div>
+              <div class="tracker-step">
+                <div class="tracker-dot-col"><div class="tracker-dot"></div><div class="tracker-line"></div></div>
+                <div class="tracker-info"><div class="tracker-title" style="color:var(--wh3);">In Progress</div><div class="tracker-sub">Repair in progress</div></div>
+              </div>
+              <div class="tracker-step">
+                <div class="tracker-dot-col"><div class="tracker-dot"></div></div>
+                <div class="tracker-info"><div class="tracker-title" style="color:var(--wh3);">Done</div><div class="tracker-sub">Repair completed</div></div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-ghost" onclick="showToast('📄 Digital receipt sent to email!')">Get Receipt</button>
+            <button class="btn-or" onclick="nav('review')">Leave Review</button>
+            <button class="btn-ghost" onclick="nav('home')">Back to Home</button>
+          </div>
+        </div>
+        <div>
+          <div style="background:var(--bk2); border:1px solid var(--br); border-radius:var(--radius-lg); padding:24px; margin-bottom:16px;">
+            <h3 class="section-label">Technician</h3>
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+              <div class="avatar md">MR</div>
+              <div style="flex:1;"><div style="font-weight:700;">Mang Romy Dela Cruz</div><div style="font-size:13px; color:var(--green);">ETA: ~25 minutes 🛵</div></div>
+            </div>
+            <button class="btn-or" style="width:100%;" onclick="nav('messages')">💬 Chat with Mang Romy</button>
+          </div>
+          <div style="background:var(--bk2); border:1px solid var(--br); border-radius:var(--radius-lg); padding:24px;">
+            <h3 class="section-label">Booking Details</h3>
+            <div class="summary-line"><span class="lbl">Booking ID</span><span style="font-family:'Syne',sans-serif; font-weight:700;">#FH-2025-0847</span></div>
+            <div class="summary-line"><span class="lbl">Service</span><span>Phone Screen Repair</span></div>
+            <div class="summary-line"><span class="lbl">Type</span><span>Home Service</span></div>
+            <div class="summary-line"><span class="lbl">Date & Time</span><span>Mar 25 • 9:00 AM</span></div>
+            <div class="summary-line"><span class="lbl">Amount Paid</span><span style="color:var(--or); font-weight:700;">₱265</span></div>
+            <div class="summary-line"><span class="lbl">Payment</span><span>GCash ✓</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── REVIEW ─── -->
+    <div class="view" id="v-review">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
+        <button class="btn-ghost" style="padding:9px 16px; font-size:13px;" onclick="nav('confirm')">← Back</button>
+        <h1 class="page-title" style="margin:0;">Leave a Review</h1>
+      </div>
+      <div style="max-width:640px; margin:0 auto;">
+        <div style="text-align:center; padding:20px 0;">
+          <div class="avatar xl" style="margin:0 auto 14px;">MR</div>
+          <h2 style="font-family:'Syne',sans-serif; font-size:22px; font-weight:800;">How was Mang Romy?</h2>
+          <p style="color:var(--wh3); font-size:14px; margin-top:6px;">Your review helps other customers find the best technicians</p>
+        </div>
+        <div class="star-row" id="star-row">
+          <span class="star-btn lit" onclick="setStars(1)">★</span>
+          <span class="star-btn lit" onclick="setStars(2)">★</span>
+          <span class="star-btn lit" onclick="setStars(3)">★</span>
+          <span class="star-btn lit" onclick="setStars(4)">★</span>
+          <span class="star-btn" onclick="setStars(5)">★</span>
+        </div>
+        <p id="star-label" style="text-align:center; font-size:15px; color:var(--wh3); margin-bottom:24px;">Very Good</p>
+        <div class="review-quick-tags">
+          <div class="chip active" onclick="this.classList.toggle('active')">⚡ Fast Service</div>
+          <div class="chip active" onclick="this.classList.toggle('active')">✅ Professional</div>
+          <div class="chip" onclick="this.classList.toggle('active')">💰 Fair Price</div>
+          <div class="chip" onclick="this.classList.toggle('active')">🔧 Quality Work</div>
+          <div class="chip" onclick="this.classList.toggle('active')">🗣️ Great Communication</div>
+          <div class="chip" onclick="this.classList.toggle('active')">🕐 On Time</div>
+        </div>
+        <div class="input-wrap"><label class="input-label">Write your review</label><textarea class="inp" rows="5" placeholder="Tell others about your experience with Mang Romy..." style="resize:vertical;"></textarea></div>
+        <div class="input-wrap"><label class="input-label">Add a photo (optional)</label>
+          <div onclick="showToast('📸 File picker opened')" style="background:var(--bk3); border:1px dashed var(--br); border-radius:10px; padding:20px; text-align:center; cursor:pointer;" onmouseover="this.style.borderColor='var(--br-or)'" onmouseout="this.style.borderColor='var(--br)'">
+            <div style="font-size:24px; margin-bottom:4px;">📷</div><p style="font-size:13px; color:var(--wh3);">Click to add a photo</p>
+          </div>
+        </div>
+        <button class="btn-or" style="width:100%;" onclick="nav('home'); showToast('🎉 Review submitted! Salamat!')">Submit Review</button>
+      </div>
+    </div>
+
+    <!-- ─── BOOKINGS ─── -->
+    <div class="view" id="v-bookings">
+      <h1 class="page-title">My Bookings</h1>
+      <div class="chip-row"><div class="chip active" onclick="setChip(this)">All</div><div class="chip" onclick="setChip(this)">Active</div><div class="chip" onclick="setChip(this)">Completed</div><div class="chip" onclick="setChip(this)">Cancelled</div></div>
+      <div class="booking-card" onclick="nav('confirm')">
+        <div class="booking-header"><span class="tag">🟢 Active</span><span style="font-size:13px; color:var(--wh3);">Mar 25, 2025</span></div>
+        <div class="booking-tech-row"><div class="avatar md">MR</div><div><div style="font-weight:700;">Mang Romy Dela Cruz</div><div style="font-size:13px; color:var(--wh3);">📱 Phone Screen Repair • Home Service</div></div><span style="margin-left:auto; font-size:13px; color:var(--green); font-weight:600;">On the Way 🛵</span></div>
+        <div class="booking-footer"><span style="font-size:13px; color:var(--wh3);">Booking #FH-2025-0847</span><span class="booking-amount">₱265</span></div>
+      </div>
+      <div class="booking-card" onclick="nav('review')">
+        <div class="booking-header"><span class="tag green">✅ Completed</span><span style="font-size:13px; color:var(--wh3);">Mar 20, 2025</span></div>
+        <div class="booking-tech-row"><div class="avatar md">AJ</div><div><div style="font-weight:700;">Ate Joy Santos</div><div style="font-size:13px; color:var(--wh3);">❄️ Aircon Cleaning • Home Service</div></div><div class="stars" style="margin-left:auto;">★★★★★</div></div>
+        <div class="booking-footer"><span style="font-size:13px; color:var(--wh3);">Booking #FH-2025-0790</span><span class="booking-amount">₱500</span></div>
+      </div>
+      <div class="booking-card" onclick="nav('review')">
+        <div class="booking-header"><span class="tag green">✅ Completed</span><span style="font-size:13px; color:var(--wh3);">Mar 10, 2025</span></div>
+        <div class="booking-tech-row"><div class="avatar md">KP</div><div><div style="font-weight:700;">Kuya Paolo Tech</div><div style="font-size:13px; color:var(--wh3);">💻 Laptop Repair • Drop-Off</div></div><div class="stars" style="margin-left:auto;">★★★★☆</div></div>
+        <div class="booking-footer"><span style="font-size:13px; color:var(--wh3);">Booking #FH-2025-0712</span><span class="booking-amount">₱750</span></div>
+      </div>
+    </div>
+
+    <!-- ─── MESSAGES ─── -->
+    <div class="view" id="v-messages">
+      <h1 class="page-title" style="margin-bottom:20px;">Messages</h1>
+      <div class="messages-layout">
+        <div class="msg-list">
+          <div class="msg-item unread active" onclick="this.parentElement.querySelectorAll('.msg-item').forEach(x=>x.classList.remove('active')); this.classList.add('active')">
+            <div style="position:relative;"><div class="avatar md">MR</div><div style="position:absolute;bottom:0;right:0;width:12px;height:12px;background:var(--green);border-radius:50%;border:2px solid var(--bk2);"></div></div>
+            <div class="msg-meta"><div class="msg-name">Mang Romy</div><div class="msg-preview">Nandito na po ako sa labas...</div></div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;"><span class="msg-time">Now</span><span class="unread-dot"></span></div>
+          </div>
+          <div class="msg-item" onclick="this.parentElement.querySelectorAll('.msg-item').forEach(x=>x.classList.remove('active')); this.classList.add('active')">
+            <div class="avatar md">AJ</div>
+            <div class="msg-meta"><div class="msg-name">Ate Joy Santos</div><div class="msg-preview">Salamat po! Kumusta na...</div></div>
+            <span class="msg-time">2d</span>
+          </div>
+          <div class="msg-item" onclick="this.parentElement.querySelectorAll('.msg-item').forEach(x=>x.classList.remove('active')); this.classList.add('active')">
+            <div class="avatar md">KP</div>
+            <div class="msg-meta"><div class="msg-name">Kuya Paolo Tech</div><div class="msg-preview">Your laptop is ready!</div></div>
+            <span class="msg-time">1w</span>
+          </div>
+        </div>
+        <div class="chat-pane">
+          <div class="chat-topbar">
+            <div style="position:relative;"><div class="avatar md">MR</div><div style="position:absolute;bottom:0;right:0;width:12px;height:12px;background:var(--green);border-radius:50%;border:2px solid var(--bk2);"></div></div>
+            <div><div style="font-size:14px; font-weight:700;">Mang Romy Dela Cruz</div><div style="font-size:12px; color:var(--green);">● Online</div></div>
+            <button class="btn-ghost" style="padding:8px 14px; font-size:12px; margin-left:auto;" onclick="nav('confirm')">View Booking</button>
+          </div>
+          <div class="chat-messages">
+            <div class="bubble-wrap">
+              <div class="bubble in">Magandang umaga po! May kasabihian ako sa booking ninyo ngayong umaga. Ready na po ako. 🔧</div>
+              <span class="bubble-time">8:45 AM</span>
+            </div>
+            <div class="bubble-wrap out">
+              <div class="bubble out">Ay sige po! Nasa 3rd floor kami. May elevator po.</div>
+              <span class="bubble-time">8:47 AM</span>
+            </div>
+            <div class="bubble-wrap">
+              <div class="bubble in">Salamat po! Papunta na ako. 5 minutes pa lang. 🛵</div>
+              <span class="bubble-time">8:55 AM</span>
+            </div>
+            <div class="bubble-wrap">
+              <div class="bubble in">Nandito na po ako sa labas ng gate ninyo 🙏</div>
+              <span class="bubble-time">9:02 AM</span>
+            </div>
+          </div>
+          <div class="chat-input-bar">
+            <input class="inp" placeholder="Type a message...">
+            <button class="send-btn" onclick="showToast('✉️ Message sent!')">➤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── PROFILE ─── -->
+    <div class="view" id="v-profile">
+      <h1 class="page-title">My Profile</h1>
+      <div class="profile-page-layout" style="margin-top:20px;">
+        <div>
+          <div class="profile-info-card">
+            <div class="avatar xl" style="margin:0 auto 14px;">JD</div>
+            <div class="profile-name">Juan dela Cruz</div>
+            <p style="font-size:13px; color:var(--wh3); margin-bottom:12px;">juan.delacruz@email.com</p>
+            <span class="tag">⭐ Premium Customer</span>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:20px;">
+              <div class="p-stat"><div class="p-stat-num">3</div><div class="p-stat-lbl">Bookings</div></div>
+              <div class="p-stat"><div class="p-stat-num">2</div><div class="p-stat-lbl">Reviews</div></div>
+              <div class="p-stat"><div class="p-stat-num">4</div><div class="p-stat-lbl">Saved</div></div>
+            </div>
+            <button class="btn-ghost" style="width:100%; margin-top:20px;" onclick="showToast('✏️ Edit profile opened')">Edit Profile</button>
+          </div>
+          <div class="profile-menu-card">
+            <div class="menu-row" onclick="showToast('🌐 Language toggled')"><span class="menu-row-icon">🌐</span><span class="menu-row-label">Language</span><span class="menu-row-right">Filipino/English ›</span></div>
+            <div class="menu-row" onclick="showToast('🌙 Dark mode toggled')"><span class="menu-row-icon">🌙</span><span class="menu-row-label">Dark Mode</span><span class="menu-row-right" style="color:var(--or);">ON ›</span></div>
+            <div class="menu-row" onclick="showToast('🔔 Notifications settings')"><span class="menu-row-icon">🔔</span><span class="menu-row-label">Notifications</span><span class="menu-row-right">›</span></div>
+            <div class="menu-row" onclick="showToast('🔒 Privacy settings')"><span class="menu-row-icon">🔒</span><span class="menu-row-label">Privacy & Security</span><span class="menu-row-right">›</span></div>
+          </div>
+          <button class="btn-ghost" style="width:100%; color:#ef4444; border-color:rgba(239,68,68,.25);" onclick="nav('login')">Log Out</button>
+        </div>
+        <div>
+          <h3 class="section-label">Quick Access</h3>
+          <div class="profile-menu-card" style="margin-bottom:16px;">
+            <div class="menu-row" onclick="nav('bookings')"><span class="menu-row-icon">📋</span><span class="menu-row-label">My Bookings</span><span class="nav-badge" style="margin-right:8px;">1</span><span class="menu-row-right">›</span></div>
+            <div class="menu-row" onclick="showToast('❤️ Saved technicians loaded')"><span class="menu-row-icon">❤️</span><span class="menu-row-label">Saved Technicians</span><span class="menu-row-right">›</span></div>
+            <div class="menu-row" onclick="showToast('🧾 Digital receipts loaded')"><span class="menu-row-icon">🧾</span><span class="menu-row-label">Digital Receipts</span><span class="menu-row-right">›</span></div>
+            <div class="menu-row" onclick="showToast('📊 Transaction insights loaded')"><span class="menu-row-icon">📊</span><span class="menu-row-label">Transaction Insights</span><span class="tag" style="font-size:10px; margin-right:6px;">Premium</span><span class="menu-row-right">›</span></div>
+          </div>
+          <h3 class="section-label">Support</h3>
+          <div class="profile-menu-card">
+            <div class="menu-row" onclick="showToast('❓ Help center opened')"><span class="menu-row-icon">❓</span><span class="menu-row-label">Help & Support</span><span class="menu-row-right">›</span></div>
+            <div class="menu-row" onclick="showToast('📜 Terms opened')"><span class="menu-row-icon">📜</span><span class="menu-row-label">Terms & Conditions</span><span class="menu-row-right">›</span></div>
+            <div class="menu-row" onclick="showToast('🛡️ Privacy policy opened')"><span class="menu-row-icon">🛡️</span><span class="menu-row-label">Privacy Policy</span><span class="menu-row-right">›</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── NOTIFICATIONS ─── -->
+    <div class="view" id="v-notifs">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+        <h1 class="page-title" style="margin:0;">Notifications</h1>
+        <button class="btn-ghost" style="padding:9px 16px; font-size:13px;" onclick="showToast('✅ All marked as read')">Mark all as read</button>
+      </div>
+      <div style="background:var(--bk2); border:1px solid var(--br); border-radius:var(--radius-lg); overflow:hidden;">
+        <div class="notif-item unread" onclick="nav('confirm')"><div class="notif-icon-wrap">🛵</div><div class="notif-text"><h4>Mang Romy is on his way!</h4><p>Your technician is heading to your location. ETA: ~25 minutes.</p><div class="notif-time">2 minutes ago</div></div></div>
+        <div class="notif-item unread" onclick="nav('confirm')"><div class="notif-icon-wrap">✅</div><div class="notif-text"><h4>Booking #FH-2025-0847 Confirmed</h4><p>Mang Romy accepted your booking for Mar 25, 9:00 AM.</p><div class="notif-time">1 hour ago</div></div></div>
+        <div class="notif-item" onclick="nav('bookings')"><div class="notif-icon-wrap">🎉</div><div class="notif-text"><h4>Repair Completed!</h4><p>Ate Joy Santos completed your aircon cleaning. Tap to leave a review.</p><div class="notif-time">2 days ago</div></div></div>
+        <div class="notif-item" onclick="showToast('🎁 Promo applied!')"><div class="notif-icon-wrap">🎁</div><div class="notif-text"><h4>Special Weekend Promo!</h4><p>Use code FIXHUB25 — free booking fee every weekend this March.</p><div class="notif-time">3 days ago</div></div></div>
+      </div>
+    </div>
+
+    <!-- ─── TECHNICIAN DASHBOARD ─── -->
+    <div class="view" id="v-tech-dash">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+        <div>
+          <p style="font-size:12px; color:var(--wh3); margin-bottom:4px;">TECHNICIAN DASHBOARD</p>
+          <h1 class="page-title" style="margin:0;">Mang Romy 🔧</h1>
         </div>
         <div style="display:flex; gap:10px; align-items:center;">
-          <div class="avatar" style="width:36px;height:36px;font-size:12px;">MR</div>
-          <div style="flex:1;">
-            <div style="font-weight:700; font-size:15px;">Mang Romy Dela Cruz</div>
-            <div style="font-size:12px; color:var(--wh3);">📱 Phone Screen Repair • Home Service</div>
-          </div>
-        </div>
-        <div class="divider"></div>
-        <div style="display:flex; justify-content:space-between;">
-          <span style="font-size:13px; color:var(--wh3);">Status: On the Way 🛵</span>
-          <span style="font-size:13px; font-weight:700; color:var(--or);">₱265</span>
+          <div onclick="showToast('🟢 Status updated to Open')" style="background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.3); border-radius:100px; padding:8px 16px; font-size:13px; font-weight:700; color:var(--green); cursor:pointer;">🟢 Open</div>
+          <button class="btn-ghost" onclick="nav('login')">Switch to Customer</button>
+          <button class="btn-or" onclick="showToast('⚙️ Technician settings opened')">Settings</button>
         </div>
       </div>
-      <!-- COMPLETED -->
-      <div class="card" style="margin-bottom:12px;" onclick="go('s-review')">
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-          <span class="tag" style="background:rgba(34,197,94,0.1); color:#22c55e; border-color:rgba(34,197,94,0.25);">✅ Completed</span>
-          <span style="font-size:12px; color:var(--wh3);">Mar 20, 2025</span>
-        </div>
-        <div style="display:flex; gap:10px; align-items:center;">
-          <div class="avatar" style="width:36px;height:36px;font-size:12px;">AJ</div>
-          <div style="flex:1;">
-            <div style="font-weight:700; font-size:15px;">Ate Joy Santos</div>
-            <div style="font-size:12px; color:var(--wh3);">❄️ Aircon Cleaning • Home Service</div>
-          </div>
-        </div>
-        <div class="divider"></div>
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div class="stars" style="font-size:14px;">★★★★★</div>
-          <span style="font-size:13px; font-weight:700; color:var(--or);">₱500</span>
-        </div>
+      <div class="tech-dash-stats">
+        <div class="stat-box"><div class="stat-num">₱1,250</div><div class="stat-lbl">Today's Earnings</div><div class="stat-delta">↑ 5 jobs done</div></div>
+        <div class="stat-box"><div class="stat-num">₱14,800</div><div class="stat-lbl">This Week</div><div class="stat-delta">↑ 12% vs last week</div></div>
+        <div class="stat-box"><div class="stat-num">₱52,000</div><div class="stat-lbl">This Month</div><div class="stat-delta">↑ 8% vs last month</div></div>
+        <div class="stat-box"><div class="stat-num">4.9 ★</div><div class="stat-lbl">FixerScore Rating</div><div style="margin-top:4px;"><span class="score-pill">⚡ 94/100</span></div></div>
       </div>
-      <div class="card" onclick="go('s-review')">
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-          <span class="tag" style="background:rgba(34,197,94,0.1); color:#22c55e; border-color:rgba(34,197,94,0.25);">✅ Completed</span>
-          <span style="font-size:12px; color:var(--wh3);">Mar 10, 2025</span>
-        </div>
-        <div style="display:flex; gap:10px; align-items:center;">
-          <div class="avatar" style="width:36px;height:36px;font-size:12px;">KP</div>
-          <div style="flex:1;">
-            <div style="font-weight:700; font-size:15px;">Kuya Paolo Tech</div>
-            <div style="font-size:12px; color:var(--wh3);">💻 Laptop Repair • Drop-Off</div>
+      <div class="tech-dash-layout">
+        <div>
+          <div class="section-header">
+            <h3 class="section-label" style="margin:0;">Incoming Bookings</h3>
+            <span class="tag">3 New</span>
+          </div>
+          <div class="job-card">
+            <div class="avatar md">JP</div>
+            <div style="flex:1;"><div style="font-size:14px; font-weight:700;">Juan Pablo</div><div style="font-size:13px; color:var(--wh3);">📱 Phone Screen Repair • Home Service</div><div style="font-size:12px; color:var(--wh3); margin-top:2px;">Today, 11:00 AM • Brgy. San Jose</div></div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <span class="job-status new">NEW</span>
+              <button class="btn-or" style="padding:8px 14px; font-size:12px;" onclick="showToast('✅ Job accepted!')">Accept</button>
+              <button class="btn-ghost" style="padding:8px 14px; font-size:12px;" onclick="showToast('❌ Job declined')">Decline</button>
+            </div>
+          </div>
+          <div class="job-card">
+            <div class="avatar md">ML</div>
+            <div style="flex:1;"><div style="font-size:14px; font-weight:700;">Maria Liza</div><div style="font-size:13px; color:var(--wh3);">💻 Laptop Diagnosis • Drop-Off</div><div style="font-size:12px; color:var(--wh3); margin-top:2px;">Today, 2:00 PM</div></div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <span class="job-status new">NEW</span>
+              <button class="btn-or" style="padding:8px 14px; font-size:12px;" onclick="showToast('✅ Job accepted!')">Accept</button>
+              <button class="btn-ghost" style="padding:8px 14px; font-size:12px;" onclick="showToast('❌ Job declined')">Decline</button>
+            </div>
+          </div>
+          <div class="job-card">
+            <div class="avatar md">CR</div>
+            <div style="flex:1;"><div style="font-size:14px; font-weight:700;">Carlo Reyes</div><div style="font-size:13px; color:var(--wh3);">📱 Battery Replacement • Home Service</div><div style="font-size:12px; color:var(--wh3); margin-top:2px;">In progress since 9:00 AM</div></div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <span class="job-status prog">IN PROGRESS</span>
+              <button class="btn-or" style="padding:8px 14px; font-size:12px;" onclick="showToast('✅ Job marked complete!')">Mark Done</button>
+            </div>
           </div>
         </div>
-        <div class="divider"></div>
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div class="stars" style="font-size:14px;">★★★★☆</div>
-          <span style="font-size:13px; font-weight:700; color:var(--or);">₱750</span>
+        <div>
+          <h3 class="section-label">My Badges</h3>
+          <div style="background:var(--bk2); border:1px solid var(--br); border-radius:var(--radius); padding:20px; margin-bottom:16px;">
+            <div style="display:flex; flex-wrap:wrap; gap:8px;">
+              <span class="badge-pill" style="background:var(--or-dim); border-color:var(--br-or); color:var(--or2);">✅ Verified</span>
+              <span class="badge-pill" style="background:var(--or-dim); border-color:var(--br-or); color:var(--or2);">👑 Master Fixer</span>
+              <span class="badge-pill" style="background:var(--or-dim); border-color:var(--br-or); color:var(--or2);">⚡ Speed Demon</span>
+              <span class="badge-pill" style="background:var(--or-dim); border-color:var(--br-or); color:var(--or2);">🛡️ Zero Complaints</span>
+              <span class="badge-pill" style="background:var(--or-dim); border-color:var(--br-or); color:var(--or2);">📅 1 Year Active</span>
+            </div>
+          </div>
+          <h3 class="section-label">This Week's Performance</h3>
+          <div style="background:var(--bk2); border:1px solid var(--br); border-radius:var(--radius); padding:20px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div class="p-stat"><div class="p-stat-num">23</div><div class="p-stat-lbl">Jobs Done</div></div>
+              <div class="p-stat"><div class="p-stat-num">100%</div><div class="p-stat-lbl">Acceptance Rate</div></div>
+              <div class="p-stat"><div class="p-stat-num">28min</div><div class="p-stat-lbl">Avg. Response</div></div>
+              <div class="p-stat"><div class="p-stat-num">0</div><div class="p-stat-lbl">Complaints</div></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="bottom-nav">
-      <div class="nav-item" onclick="go('s-home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
-      <div class="nav-item" onclick="go('s-search')"><div class="nav-icon">🔍</div><div class="nav-label">Search</div></div>
-      <div class="nav-item active"><div class="nav-icon">📋</div><div class="nav-label">Bookings</div></div>
-      <div class="nav-item" onclick="go('s-messages')"><div class="nav-icon">💬</div><div class="nav-label">Messages</div></div>
-      <div class="nav-item" onclick="go('s-profile')"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
-    </div>
-  </div>
 
-  <!-- ═══════════════ MESSAGES ═══════════════ -->
-  <div class="screen" id="s-messages">
-    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><span>📶</span><span>🔋</span></div></div>
-    <div style="padding:14px 20px 16px;"><h2 style="font-family:'Syne',sans-serif; font-size:20px; font-weight:800;">Messages</h2></div>
-    <div class="content" style="padding-top:0;">
-      <div onclick="go('s-chat')" style="display:flex; gap:12px; align-items:center; padding:14px 0; border-bottom:1px solid var(--br); cursor:pointer;">
-        <div style="position:relative;"><div class="avatar">MR</div><div style="position:absolute; bottom:0; right:0; width:12px; height:12px; background:#22c55e; border-radius:50%; border:2px solid var(--bk);"></div></div>
-        <div style="flex:1;">
-          <div style="display:flex; justify-content:space-between;"><span style="font-weight:700; font-size:15px;">Mang Romy</span><span style="font-size:11px; color:var(--wh3);">Just now</span></div>
-          <div style="font-size:13px; color:var(--wh3);">Nandito na po ako sa labas ng gate ninyo...</div>
-        </div>
-        <div class="notif-dot">1</div>
-      </div>
-      <div onclick="go('s-chat')" style="display:flex; gap:12px; align-items:center; padding:14px 0; border-bottom:1px solid var(--br); cursor:pointer;">
-        <div class="avatar">AJ</div>
-        <div style="flex:1;">
-          <div style="display:flex; justify-content:space-between;"><span style="font-weight:700; font-size:15px;">Ate Joy Santos</span><span style="font-size:11px; color:var(--wh3);">2d ago</span></div>
-          <div style="font-size:13px; color:var(--wh3);">Salamat po! Kumusta na po ang aircon?</div>
-        </div>
-      </div>
-      <div onclick="go('s-chat')" style="display:flex; gap:12px; align-items:center; padding:14px 0; cursor:pointer;">
-        <div class="avatar">KP</div>
-        <div style="flex:1;">
-          <div style="display:flex; justify-content:space-between;"><span style="font-weight:700; font-size:15px;">Kuya Paolo Tech</span><span style="font-size:11px; color:var(--wh3);">1w ago</span></div>
-          <div style="font-size:13px; color:var(--wh3);">Your laptop is ready for pickup!</div>
-        </div>
-      </div>
-    </div>
-    <div class="bottom-nav">
-      <div class="nav-item" onclick="go('s-home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
-      <div class="nav-item" onclick="go('s-search')"><div class="nav-icon">🔍</div><div class="nav-label">Search</div></div>
-      <div class="nav-item" onclick="go('s-bookings')"><div class="nav-icon">📋</div><div class="nav-label">Bookings</div></div>
-      <div class="nav-item active"><div class="nav-icon">💬</div><div class="nav-label">Messages</div></div>
-      <div class="nav-item" onclick="go('s-profile')"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
-    </div>
-  </div>
+  </main><!-- end main -->
+</div><!-- end app -->
 
-  <!-- ═══════════════ CHAT ═══════════════ -->
-  <div class="screen" id="s-chat">
-    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><span>📶</span><span>🔋</span></div></div>
-    <div class="top-bar">
-      <button class="back-btn" onclick="goBack('s-messages')">←</button>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <div class="avatar" style="width:32px;height:32px;font-size:11px;">MR</div>
-        <div><div style="font-size:14px; font-weight:700;">Mang Romy</div><div style="font-size:11px; color:#22c55e;">● Online</div></div>
-      </div>
-      <div style="width:36px"></div>
-    </div>
-    <div style="flex:1; padding:0 20px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; padding-top:8px;">
-      <!-- MESSAGES -->
-      <div style="align-self:flex-start; max-width:75%;">
-        <div style="background:var(--bk3); border-radius:4px 16px 16px 16px; padding:12px 14px; font-size:14px; line-height:1.5;">Magandang umaga po! May kasabihian ako sa booking ninyo ngayong umaga. Ready na po ako. 🔧</div>
-        <div style="font-size:11px; color:var(--wh3); margin-top:4px;">8:45 AM</div>
-      </div>
-      <div style="align-self:flex-end; max-width:75%;">
-        <div style="background:var(--or); border-radius:16px 4px 16px 16px; padding:12px 14px; font-size:14px; line-height:1.5; color:white;">Ay sige po! Nasa 3rd floor kami. May elevator po.</div>
-        <div style="font-size:11px; color:var(--wh3); margin-top:4px; text-align:right;">8:47 AM</div>
-      </div>
-      <div style="align-self:flex-start; max-width:75%;">
-        <div style="background:var(--bk3); border-radius:4px 16px 16px 16px; padding:12px 14px; font-size:14px; line-height:1.5;">Nandito na po ako sa labas ng gate ninyo 🙏</div>
-        <div style="font-size:11px; color:var(--wh3); margin-top:4px;">9:02 AM</div>
-      </div>
-    </div>
-    <div style="padding:12px 20px 24px; display:flex; gap:10px; background:var(--bk); border-top:1px solid var(--br);">
-      <input class="inp" placeholder="Type a message..." style="flex:1; margin:0; padding:12px 14px;">
-      <button onclick="showToast('✉️ Message sent!')" style="background:var(--or); border:none; border-radius:12px; width:44px; height:44px; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">➤</button>
-    </div>
-  </div>
-
-  <!-- ═══════════════ PROFILE (CUSTOMER) ═══════════════ -->
-  <div class="screen" id="s-profile">
-    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><span>📶</span><span>🔋</span></div></div>
-    <div style="padding:14px 20px 0; display:flex; justify-content:space-between; align-items:center;">
-      <h2 style="font-family:'Syne',sans-serif; font-size:20px; font-weight:800;">My Profile</h2>
-      <span onclick="showToast('⚙️ Settings opened')" style="font-size:22px; cursor:pointer;">⚙️</span>
-    </div>
-    <div style="overflow-y:auto; flex:1;">
-      <div style="padding:20px; text-align:center; border-bottom:1px solid var(--br);">
-        <div class="avatar lg" style="margin:0 auto 12px;">JD</div>
-        <h3 style="font-family:'Syne',sans-serif; font-size:18px; font-weight:800;">Juan dela Cruz</h3>
-        <p style="font-size:13px; color:var(--wh3);">juan.delacruz@email.com</p>
-        <span class="tag" style="margin-top:10px; display:inline-block;">⭐ Premium Customer</span>
-      </div>
-      <div class="content" style="padding-top:16px;">
-        <div class="profile-stats">
-          <div class="p-stat"><div class="p-stat-num">3</div><div class="p-stat-lbl">Bookings</div></div>
-          <div class="p-stat"><div class="p-stat-num">2</div><div class="p-stat-lbl">Reviews</div></div>
-          <div class="p-stat"><div class="p-stat-num">4</div><div class="p-stat-lbl">Saved</div></div>
-        </div>
-        <!-- MENU ITEMS -->
-        <div class="card" style="margin-bottom:10px; padding:0; overflow:hidden; cursor:default;">
-          <div onclick="go('s-bookings')" style="display:flex; align-items:center; gap:12px; padding:16px; border-bottom:1px solid var(--br); cursor:pointer;">
-            <span style="font-size:20px;">📋</span><span style="font-size:15px; font-weight:600; flex:1;">My Bookings</span><span style="color:var(--wh3);">›</span>
-          </div>
-          <div onclick="showToast('⭐ Saved technicians loaded')" style="display:flex; align-items:center; gap:12px; padding:16px; border-bottom:1px solid var(--br); cursor:pointer;">
-            <span style="font-size:20px;">❤️</span><span style="font-size:15px; font-weight:600; flex:1;">Saved Technicians</span><span style="color:var(--wh3);">›</span>
-          </div>
-          <div onclick="showToast('📄 Digital receipts loaded')" style="display:flex; align-items:center; gap:12px; padding:16px; border-bottom:1px solid var(--br); cursor:pointer;">
-            <span style="font-size:20px;">🧾</span><span style="font-size:15px; font-weight:600; flex:1;">Digital Receipts</span><span style="color:var(--wh3);">›</span>
-          </div>
-          <div onclick="showToast('📊 Transaction insights loaded')" style="display:flex; align-items:center; gap:12px; padding:16px; cursor:pointer;">
-            <span style="font-size:20px;">📊</span><span style="font-size:15px; font-weight:600; flex:1;">Transaction Insights</span><span class="tag" style="font-size:10px;">Premium</span><span style="color:var(--wh3);">›</span>
-          </div>
-        </div>
-        <div class="card" style="padding:0; overflow:hidden; cursor:default; margin-bottom:16px;">
-          <div onclick="showToast('🌐 Language toggled')" style="display:flex; align-items:center; gap:12px; padding:16px; border-bottom:1px solid var(--br); cursor:pointer;">
-            <span style="font-size:20px;">🌐</span><span style="font-size:15px; font-weight:600; flex:1;">Language</span><span style="font-size:13px; color:var(--wh3);">Filipino/English ›</span>
-          </div>
-          <div onclick="showToast('🌙 Dark mode toggled')" style="display:flex; align-items:center; gap:12px; padding:16px; border-bottom:1px solid var(--br); cursor:pointer;">
-            <span style="font-size:20px;">🌙</span><span style="font-size:15px; font-weight:600; flex:1;">Dark Mode</span><span style="font-size:13px; color:var(--or);">ON ›</span>
-          </div>
-          <div onclick="showToast('❓ Help center opened')" style="display:flex; align-items:center; gap:12px; padding:16px; cursor:pointer;">
-            <span style="font-size:20px;">❓</span><span style="font-size:15px; font-weight:600; flex:1;">Help & Support</span><span style="color:var(--wh3);">›</span>
-          </div>
-        </div>
-        <button class="btn-ghost" onclick="go('s-splash')" style="color:#ef4444; border-color:rgba(239,68,68,.25);">Log Out</button>
-      </div>
-    </div>
-    <div class="bottom-nav">
-      <div class="nav-item" onclick="go('s-home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
-      <div class="nav-item" onclick="go('s-search')"><div class="nav-icon">🔍</div><div class="nav-label">Search</div></div>
-      <div class="nav-item" onclick="go('s-bookings')"><div class="nav-icon">📋</div><div class="nav-label">Bookings</div></div>
-      <div class="nav-item" onclick="go('s-messages')"><div class="nav-icon">💬</div><div class="nav-label">Messages</div></div>
-      <div class="nav-item active"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
-    </div>
-  </div>
-
-  <!-- ═══════════════ NOTIFICATIONS ═══════════════ -->
-  <div class="screen" id="s-notifs">
-    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><span>📶</span><span>🔋</span></div></div>
-    <div class="top-bar">
-      <button class="back-btn" onclick="goBack('s-home')">←</button>
-      <span class="top-title">Notifications</span>
-      <span onclick="showToast('✅ All marked as read')" style="font-size:13px; color:var(--or); cursor:pointer; font-weight:600;">Clear all</span>
-    </div>
-    <div style="overflow-y:auto; flex:1;">
-      <div class="notif-item unread" onclick="go('s-confirm')">
-        <div class="notif-icon-wrap">🛵</div>
-        <div class="notif-text">
-          <h4>Mang Romy is on his way!</h4>
-          <p>Your technician is heading to your location. ETA: ~25 minutes.</p>
-          <div class="notif-time">2 minutes ago</div>
-        </div>
-      </div>
-      <div class="notif-item unread" onclick="go('s-confirm')">
-        <div class="notif-icon-wrap">✅</div>
-        <div class="notif-text">
-          <h4>Booking #FH-2025-0847 Confirmed</h4>
-          <p>Mang Romy accepted your booking for Mar 25, 9:00 AM.</p>
-          <div class="notif-time">1 hour ago</div>
-        </div>
-      </div>
-      <div class="notif-item" onclick="go('s-bookings')">
-        <div class="notif-icon-wrap">🎉</div>
-        <div class="notif-text">
-          <h4>Repair Completed!</h4>
-          <p>Ate Joy Santos completed your aircon cleaning. Tap to leave a review.</p>
-          <div class="notif-time">2 days ago</div>
-        </div>
-      </div>
-      <div class="notif-item" onclick="showToast('🎁 Promo code applied!')">
-        <div class="notif-icon-wrap">🎁</div>
-        <div class="notif-text">
-          <h4>Special Weekend Promo!</h4>
-          <p>Use code FIXHUB25 — free booking fee every weekend this March.</p>
-          <div class="notif-time">3 days ago</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════ TECHNICIAN DASHBOARD ═══════════════ -->
-  <div class="screen" id="s-tech-dash">
-    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><span>📶</span><span>🔋</span></div></div>
-    <div style="padding:14px 20px 0; display:flex; justify-content:space-between; align-items:center;">
-      <div>
-        <div style="font-size:12px; color:var(--wh3);">Technician Dashboard</div>
-        <div style="font-family:'Syne',sans-serif; font-size:20px; font-weight:800;">Mang Romy 🔧</div>
-      </div>
-      <div style="display:flex; gap:8px; align-items:center;">
-        <div style="background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.3); border-radius:100px; padding:6px 12px; font-size:12px; font-weight:700; color:#22c55e; cursor:pointer;" onclick="showToast('🟢 Status updated to Open')">🟢 Open</div>
-        <button class="notif-btn" onclick="go('s-notifs')" style="position:relative;">🔔</button>
-      </div>
-    </div>
-    <div style="overflow-y:auto; flex:1; padding:0 20px 20px; padding-top:16px;">
-      <!-- EARNINGS CARD -->
-      <div class="earn-card">
-        <div style="font-size:12px; color:var(--wh3); margin-bottom:6px;">Today's Earnings</div>
-        <div class="earn-amount">₱1,250</div>
-        <div class="earn-label">5 jobs completed</div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px;">
-          <div style="background:rgba(255,255,255,0.06); border-radius:10px; padding:12px; text-align:center;">
-            <div style="font-family:'Syne',sans-serif; font-size:18px; font-weight:800;">₱14,800</div>
-            <div style="font-size:11px; color:var(--wh3);">This Week</div>
-          </div>
-          <div style="background:rgba(255,255,255,0.06); border-radius:10px; padding:12px; text-align:center;">
-            <div style="font-family:'Syne',sans-serif; font-size:18px; font-weight:800;">₱52,000</div>
-            <div style="font-size:11px; color:var(--wh3);">This Month</div>
-          </div>
-        </div>
-      </div>
-      <!-- INCOMING BOOKINGS -->
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-        <h3 style="font-family:'Syne',sans-serif; font-size:16px; font-weight:700;">Incoming Bookings</h3>
-        <span class="tag">3 New</span>
-      </div>
-      <div class="job-card" onclick="showToast('📋 Job details opened')">
-        <div class="avatar" style="width:40px;height:40px;font-size:12px;">JP</div>
-        <div style="flex:1;">
-          <div style="font-size:14px; font-weight:700;">Juan Pablo</div>
-          <div style="font-size:12px; color:var(--wh3);">📱 Phone Screen Repair • Home Service</div>
-          <div style="font-size:12px; color:var(--wh3);">Today, 11:00 AM • Brgy. San Jose</div>
-        </div>
-        <span class="job-status new">NEW</span>
-      </div>
-      <div class="job-card" onclick="showToast('📋 Job details opened')">
-        <div class="avatar" style="width:40px;height:40px;font-size:12px;">ML</div>
-        <div style="flex:1;">
-          <div style="font-size:14px; font-weight:700;">Maria Liza</div>
-          <div style="font-size:12px; color:var(--wh3);">💻 Laptop Diagnosis • Drop-Off</div>
-          <div style="font-size:12px; color:var(--wh3);">Today, 2:00 PM</div>
-        </div>
-        <span class="job-status new">NEW</span>
-      </div>
-      <div class="job-card" onclick="showToast('✅ Job marked as complete!')">
-        <div class="avatar" style="width:40px;height:40px;font-size:12px;">CR</div>
-        <div style="flex:1;">
-          <div style="font-size:14px; font-weight:700;">Carlo Reyes</div>
-          <div style="font-size:12px; color:var(--wh3);">📱 Battery Replacement • Home Service</div>
-          <div style="font-size:12px; color:var(--wh3);">In progress since 9:00 AM</div>
-        </div>
-        <span class="job-status prog">IN PROGRESS</span>
-      </div>
-      <!-- BADGES -->
-      <h3 style="font-family:'Syne',sans-serif; font-size:16px; font-weight:700; margin:20px 0 14px;">My Badges</h3>
-      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;">
-        <span class="badge-pill" style="background:var(--or-dim); border-color:var(--br-or); color:var(--or2);">✅ Verified</span>
-        <span class="badge-pill" style="background:var(--or-dim); border-color:var(--br-or); color:var(--or2);">👑 Master Fixer</span>
-        <span class="badge-pill" style="background:var(--or-dim); border-color:var(--br-or); color:var(--or2);">⚡ Speed Demon</span>
-        <span class="badge-pill" style="background:var(--or-dim); border-color:var(--br-or); color:var(--or2);">🛡️ Zero Complaints</span>
-        <span class="badge-pill" style="background:var(--or-dim); border-color:var(--br-or); color:var(--or2);">📅 1 Year Active</span>
-      </div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-        <button class="btn-ghost" onclick="go('s-login')">Switch to Customer</button>
-        <button class="btn-or" onclick="showToast('⚙️ Technician settings opened')">Settings</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- TOAST NOTIFICATION -->
-  <div class="toast" id="toast">
-    <span class="toast-icon" id="toast-icon"></span>
-    <span class="toast-text" id="toast-text"></span>
-  </div>
-
-  </div><!-- phone-screen -->
-</div><!-- phone-frame -->
-</div><!-- phone-wrap -->
-
-
+<!-- TOAST -->
+<div id="toast"><span id="toast-icon" style="font-size:18px;"></span><span id="toast-text"></span></div>
 
 <script>
-let currentScreen = 's-splash';
-let history = [];
+// ─── NAVIGATION ───
+const views = ['login','signup','home','search','tech-profile','booking','payment','confirm','review','bookings','messages','profile','notifs','tech-dash'];
+const navLinks = ['home','search','bookings','messages','profile','notifs'];
 
-function go(screenId) {
-  const current = document.getElementById(currentScreen);
-  const next = document.getElementById(screenId);
-  if (!next || currentScreen === screenId) return;
-  current.classList.remove('active','back');
-  next.classList.remove('back');
-  next.classList.add('active');
-  history.push(currentScreen);
-  currentScreen = screenId;
-  next.scrollTop = 0;
+function nav(id) {
+  views.forEach(v => {
+    const el = document.getElementById('v-' + v);
+    if(el) el.classList.remove('active');
+  });
+  const target = document.getElementById('v-' + id);
+  if(target) { target.classList.add('active'); target.scrollTop = 0; }
+
+  // Sidebar active state
+  navLinks.forEach(l => {
+    const nl = document.getElementById('nl-' + l);
+    if(nl) nl.classList.remove('active');
+  });
+  const active = document.getElementById('nl-' + id);
+  if(active) active.classList.add('active');
+
+  // Show/hide sidebar + topbar for auth screens
+  const isAuth = (id === 'login' || id === 'signup');
+  document.querySelector('.sidebar').style.display = isAuth ? 'none' : '';
+  document.querySelector('.topbar').style.display = isAuth ? 'none' : '';
+  if(isAuth) {
+    document.getElementById('app').style.gridTemplateColumns = '1fr';
+    document.getElementById('app').style.gridTemplateRows = '1fr';
+  } else {
+    document.getElementById('app').style.gridTemplateColumns = 'var(--sidebar-w) 1fr';
+    document.getElementById('app').style.gridTemplateRows = 'var(--topbar-h) 1fr';
+  }
 }
 
-function goBack(screenId) {
-  const current = document.getElementById(currentScreen);
-  const prev = document.getElementById(screenId);
-  if (!prev) return;
-  current.classList.remove('active');
-  prev.classList.add('active','back');
-  currentScreen = screenId;
-  setTimeout(() => prev.classList.remove('back'), 350);
-}
-
-// Account type select
+// ─── ACCOUNT TYPE ───
 function selectAccType(type) {
   document.getElementById('at-customer').classList.toggle('selected', type==='customer');
   document.getElementById('at-tech').classList.toggle('selected', type==='tech');
 }
 
-// Service type select
+// ─── SERVICE TYPE ───
 function selectSvc(type) {
   document.getElementById('svc-home').classList.toggle('selected', type==='home');
   document.getElementById('svc-drop').classList.toggle('selected', type==='drop');
 }
 
-// Payment select
+// ─── PAYMENT ───
 function selectPay(type) {
   document.getElementById('pay-gcash').classList.toggle('selected', type==='gcash');
   document.getElementById('pay-maya').classList.toggle('selected', type==='maya');
 }
 
-// Star rating
+// ─── CHIP SELECT ───
+function setChip(el) {
+  const row = el.closest('.chip-row');
+  if(row) row.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ─── TIME SLOT ───
+function setTimeSlot(el) {
+  document.querySelectorAll('#v-booking .time-slot').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ─── STARS ───
 let starCount = 4;
 function setStars(n) {
   starCount = n;
@@ -1275,33 +1230,20 @@ function setStars(n) {
   document.getElementById('star-label').textContent = labels[n];
 }
 
-// Chip click
-document.querySelectorAll('.chip').forEach(c => {
-  c.addEventListener('click', function() {
-    const row = this.closest('.chip-row');
-    if(row) row.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
-    this.classList.add('active');
-  });
-});
-// Time slot click
-document.querySelectorAll('.time-slot').forEach(s => {
-  s.addEventListener('click', function() {
-    document.querySelectorAll('.time-slot').forEach(x => x.classList.remove('selected'));
-    this.classList.add('selected');
-  });
-});
-
-// Toast
+// ─── TOAST ───
 let toastTimer;
 function showToast(msg) {
   const el = document.getElementById('toast');
-  const parts = msg.match(/^([\s\S]*?)\s(.+)$/);
-  document.getElementById('toast-icon').textContent = parts ? parts[1] : '';
-  document.getElementById('toast-text').textContent = parts ? parts[2] : msg;
+  const match = msg.match(/^([\s\S]{1,4}?)\s(.+)$/);
+  document.getElementById('toast-icon').textContent = match ? match[1] : '✨';
+  document.getElementById('toast-text').textContent = match ? match[2] : msg;
   el.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
 }
+
+// Start on login
+nav('login');
 </script>
 </body>
 </html>
